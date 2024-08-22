@@ -50,6 +50,10 @@ public class PlayerMovement : MonoBehaviour
             float speedStep = player.mouseInputSpeed * gameManager.deltaTime;
             float targetPitchDelta = mouseDelta.y * speedStep;
             float curPitch = player.bodyCamera.transform.rotation.eulerAngles.x;
+            // fixing pitch to be 0 degree-centered, like in Unreal
+            // if you look down Unity, pitch goes 0->90, and looking up, Unity pitch goes 360->270, maddeningly flipping
+            // between 0 and 360 at the horizon. 
+            // Unreal: look down goes 0->-90, look up goes 0->90, because of course it should be that way.
             if (curPitch > 180.0f)
             {
                 curPitch = 360.0f - curPitch;
@@ -59,6 +63,7 @@ public class PlayerMovement : MonoBehaviour
                 curPitch = -curPitch;
             }
 
+            // how much space we have to rotate up (x) and rotate down (y)
             Vector2 pitchRoom;
             pitchRoom.x = Math.Clamp(MAX_PITCH - curPitch, 0.0f, MAX_PITCH * 2.0f);
             pitchRoom.y = Math.Clamp(MIN_PITCH - curPitch, MIN_PITCH * 2.0f, 0.0f);
@@ -74,6 +79,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (Math.Abs(pitchDelta) > 0.0f)
             {
+                // quaternion rot because all other rotations are a lie
                 float halfPitchDeltaRadians = pitchDelta * (0.5f * (float)Math.PI / 180.0f);
                 Vector3 rotationAxis = -Vector3.right * (float)Math.Sin(halfPitchDeltaRadians);
                 Quaternion rotation;
@@ -132,6 +138,7 @@ public class PlayerMovement : MonoBehaviour
     
     void UpdateTranslation(Vector2 moveInput)
     {
+        // apply friction to slow down faster when not accelerating
         if (moveInput.SqrMagnitude() < 1e-5f)
         {
             ApplyFriction();
@@ -166,6 +173,7 @@ public class PlayerMovement : MonoBehaviour
             moveRight = tForm.right * (moveInput.x * speedStep);
         }
 
+        // apply friction when accelerating opposite our velocity so we change direction faster
         Vector3 worldMoveInput = moveFore + moveRight;
         if (Vector3.Dot(worldMoveInput, player.rigidBody.velocity) < 0.0f)
         {
@@ -174,6 +182,7 @@ public class PlayerMovement : MonoBehaviour
         player.rigidBody.AddForce(worldMoveInput);
     }
 
+    // if we don't skip the first few frames, we often end up looking at the ground or sky
     private bool SkipUpdateFirstFewFrames()
     {
         return player.tickCounter < 5;

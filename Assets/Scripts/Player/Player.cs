@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
                 bodyCamera = ChildTransform.gameObject;
             }
         }
+        GetComponent<MeshRenderer>().enabled = false;
         rigidBody = GetComponent<Rigidbody>();
         capsuleCollider = GetComponent<CapsuleCollider>();
         gameManager = FindObjectOfType<GameManager>();
@@ -40,6 +41,7 @@ public class Player : MonoBehaviour
         const float FAILSAFE_RESPAWN_DELAY = 2.0f;
         if (!CheckGroundIsBeneath())
         {
+            // panic and respawn in the last checkpoint
             noGroundPanicTimer += gameManager.deltaTime;
             if (noGroundPanicTimer > FAILSAFE_RESPAWN_DELAY && bCheckpointSet)
             {
@@ -72,6 +74,8 @@ public class Player : MonoBehaviour
             position + (-forward - right).normalized * halfExtent
         };
 
+        // iteratively raycast downward from points inside our collider to try to find, at minimum, that there
+        // is ground below us. even better, we want to be on the ground.
         bOnGround = false;
         bool bHitSomethingBelow = false;
         Vector3 debugStartLine = Vector3.zero;
@@ -98,6 +102,7 @@ public class Player : MonoBehaviour
                         Debug.DrawLine(positions[i], hit.point, Color.blue);
                     }
 
+                    // on ground
                     return true;
                 }
             }
@@ -107,6 +112,7 @@ public class Player : MonoBehaviour
         {
             Debug.DrawLine(debugStartLine, debugEndLine + Vector3.up * 0.3f, Color.blue);
             Debug.DrawLine(debugEndLine, debugEndLine + Vector3.up * 0.3f, Color.magenta);
+            // ground below
             return true;
         }
 
@@ -115,6 +121,7 @@ public class Player : MonoBehaviour
             Debug.DrawLine(position, position + Vector3.down * 100.0f, Color.red);
         }
 
+        // no ground below
         return false;
     }
 
@@ -170,7 +177,7 @@ public class Player : MonoBehaviour
     public float runSpeedMultiplier
     {
         get => _runSpeedMultiplier;
-        set => _runSpeedMultiplier = Math.Clamp(value, 1.0f, 10.0f);
+        set => _runSpeedMultiplier = Math.Clamp(value, 1.0f, 3.0f);
     }
     [SerializeField, Range(1.0f, 3.0f)] private float _runSpeedMultiplier = RUN_SPEED_MULTIPLIER_DEFAULT;
 

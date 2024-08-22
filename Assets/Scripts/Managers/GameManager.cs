@@ -40,6 +40,9 @@ public class GameManager : MonoBehaviour
         deltaTimeTarget = Time.deltaTime;
         float DTAccel = (deltaTimeTarget - deltaTime) * 0.25f;
         deltaTime += DTAccel;
+        // deltaTime of 0 can cause bugs and crashes
+        // large deltaTime makes your game unhappy
+        deltaTime = Math.Clamp(deltaTime, 2e-7f, 0.2f);
     }
 
     private void Awake()
