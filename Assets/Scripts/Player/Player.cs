@@ -162,6 +162,20 @@ public class Player : MonoBehaviour
     // camera forward offset from body center
     public float cameraLurchOffset = 0.12f;
     
+    public float headBobFrequency
+    {
+        get => _headBobFrequency;
+        set => _headBobFrequency = Mathf.Clamp(value, 0.0f, 1.0f);
+    }
+    [SerializeField, Range(0.0f, 1.0f)] private float _headBobFrequency = 0.4f;
+    
+    public float headBobVerticalIntensity
+    {
+        get => _headBobVerticalIntensity;
+        set => _headBobVerticalIntensity = Mathf.Clamp(value, 0.0f, 1.0f);
+    }
+    [SerializeField, Range(0.0f, 1.0f)] private float _headBobVerticalIntensity = 0.25f;
+    
     // determines how 'heavy' turning the camera feels; higher is more
     public float headWeight
     {
