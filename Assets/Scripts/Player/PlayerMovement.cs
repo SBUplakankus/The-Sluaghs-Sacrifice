@@ -1,0 +1,186 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerMovement : MonoBehaviour
+{
+    // Start is called before the first frame update
+    void Start()
+    {
+        player = GetComponent<Player>();
+        gameManager = FindObjectOfType<GameManager>();
+        pitchOrientation = transform.rotation;
+    }
+
+    public void UpdateMoveAndLook(Vector2 moveInput, Vector2 lookInput)
+    {
+        UpdateYaw(lookInput);
+        UpdatePitch(lookInput);
+        UpdateTranslation(moveInput);
+    }
+    
+    private void UpdateYaw(Vector2 mouseDelta)
+    {
+         if (SkipUpdateFirstFewFrames())
+         {
+             return;
+         }
+
+         if (mouseDelta.SqrMagnitude() > 1e-6f)
+         {
+            float speedStep = player.mouseInputSpeed * gameManager.deltaTime;
+            float targetYawDelta = mouseDelta.x * speedStep;
+            Vector3 euler = transform.eulerAngles;
+            yawOrientation.eulerAngles += new Vector3(euler.x, euler.y + targetYawDelta, 0.0f);
+         }
+    }
+    void UpdatePitch(Vector2 mouseDelta)
+    {
+        const float MAX_PITCH = 70.0f;
+        const float MIN_PITCH = -60.0f;
+
+        if (SkipUpdateFirstFewFrames())
+        {
+            return;
+        }
+
+        if (mouseDelta.SqrMagnitude() > 1e-6f)
+        {
+            float speedStep = player.mouseInputSpeed * gameManager.deltaTime;
+            float targetPitchDelta = mouseDelta.y * speedStep;
+            float curPitch = player.bodyCamera.transform.rotation.eulerAngles.x;
+            if (curPitch > 180.0f)
+            {
+                curPitch = 360.0f - curPitch;
+            }
+            else
+            {
+                curPitch = -curPitch;
+            }
+
+            Vector2 pitchRoom;
+            pitchRoom.x = Math.Clamp(MAX_PITCH - curPitch, 0.0f, MAX_PITCH * 2.0f);
+            pitchRoom.y = Math.Clamp(MIN_PITCH - curPitch, MIN_PITCH * 2.0f, 0.0f);
+            float pitchDelta = 0.0f;
+            if (targetPitchDelta > 0.0f)
+            {
+                pitchDelta = Math.Clamp(targetPitchDelta, 0.0f, pitchRoom.x);
+            }
+            else if (targetPitchDelta < 0.0f)
+            {
+                pitchDelta = Math.Clamp(targetPitchDelta, pitchRoom.y, 0.0f);
+            }
+
+            if (Math.Abs(pitchDelta) > 0.0f)
+            {
+                float halfPitchDeltaRadians = pitchDelta * (0.5f * (float)Math.PI / 180.0f);
+                Vector3 rotationAxis = -Vector3.right * (float)Math.Sin(halfPitchDeltaRadians);
+                Quaternion rotation;
+                rotation.x = rotationAxis.x;
+                rotation.y = rotationAxis.y;
+                rotation.z = rotationAxis.z;
+                rotation.w = (float)Math.Cos(halfPitchDeltaRadians);
+                pitchOrientation *= rotation;
+                float yawRadians = yawOrientation.eulerAngles.y * ((float)Math.PI / 180.0f);
+                Vector3 camPosition =
+                    new Vector3((float)Math.Sin(yawRadians), player.cameraHeightOffset, (float)Math.Cos(yawRadians))
+                    * player.cameraLurchOffset;
+                player.bodyCamera.transform.SetLocalPositionAndRotation(camPosition, Quaternion.identity);
+                player.bodyCamera.transform.rotation = yawOrientation * pitchOrientation;
+            }
+        }
+
+        if (player.bDebugDraw)
+        {
+            Debug.DrawLine(
+                player.bodyCamera.transform.position, 
+                player.bodyCamera.transform.position + player.bodyCamera.transform.forward * 3.0f, 
+                Color.blue
+            );
+        }
+    }
+    
+    void ApplyFriction()
+    {
+        const float FRICTION_MULTIPLIER = 2.0f;
+        Vector3 velocity = player.rigidBody.velocity;
+        float moveModeModifier = 1.0f;
+        if (player.GetMoveMode() == PlayerMoveMode.Walk)
+        {
+            velocity.y = 0.0f;
+        }
+        else
+        {
+            moveModeModifier = player.flySpeedMultiplier;
+        }
+        if (velocity.sqrMagnitude > 0.0f)
+        {
+            float friction = player.rigidBody.mass * 9.8f * player.frictionCoefficient * gameManager.deltaTime 
+                 * moveModeModifier * FRICTION_MULTIPLIER;
+            if (friction * friction > velocity.sqrMagnitude)
+            {
+                player.rigidBody.velocity = Vector3.zero;
+            }
+            else
+            {
+                Vector3 NegVelocityNorm = (-velocity).normalized;
+                player.rigidBody.velocity += NegVelocityNorm * friction;
+            }
+        }
+    }
+    
+    void UpdateTranslation(Vector2 moveInput)
+    {
+        if (moveInput.SqrMagnitude() < 1e-5f)
+        {
+            ApplyFriction();
+            return;
+        }
+
+        moveInput.Normalize();
+
+        float runModifier = player.IsRunning() ? player.runSpeedMultiplier : 1.0f;
+
+        Vector3 moveFore, moveRight;
+        const float FORCE_MULTIPLIER = 350.0f;
+        if (player.GetMoveMode() == PlayerMoveMode.Walk)
+        {
+            float maxSpeed = player.walkSpeed * runModifier;
+            player.rigidBody.maxLinearVelocity = maxSpeed;
+            float speedStep = maxSpeed * gameManager.deltaTime * FORCE_MULTIPLIER;
+            Transform tForm = player.bodyCamera.transform;
+            Vector3 forward3d = tForm.forward;
+            Vector2 forward2d = new Vector2(forward3d.z, forward3d.x).normalized;
+            moveFore = new Vector3(forward2d.y, 0.0f, forward2d.x) * (moveInput.y * speedStep);
+            moveRight = tForm.right * (moveInput.x * speedStep);
+        }
+        else // Fly
+        {
+            float maxSpeed = player.walkSpeed * runModifier * player.flySpeedMultiplier;
+            player.rigidBody.maxLinearVelocity = maxSpeed;
+            float speedStep = maxSpeed * gameManager.deltaTime * FORCE_MULTIPLIER;
+            Transform tForm = player.bodyCamera.transform;
+            Vector3 forward3d = tForm.forward;
+            moveFore = forward3d * (moveInput.y * speedStep);
+            moveRight = tForm.right * (moveInput.x * speedStep);
+        }
+
+        Vector3 worldMoveInput = moveFore + moveRight;
+        if (Vector3.Dot(worldMoveInput, player.rigidBody.velocity) < 0.0f)
+        {
+            ApplyFriction();
+        }
+        player.rigidBody.AddForce(worldMoveInput);
+    }
+
+    private bool SkipUpdateFirstFewFrames()
+    {
+        return player.tickCounter < 5;
+    }
+    
+    private Player player;
+    private GameManager gameManager;
+    private Quaternion yawOrientation;
+    private Quaternion pitchOrientation;
+}
