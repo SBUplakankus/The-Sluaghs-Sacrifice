@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     {
         UpdateYaw(lookInput);
         UpdatePitch(lookInput);
+        UpdateCamera();
         UpdateTranslation(moveInput);
     }
     
@@ -88,12 +89,6 @@ public class PlayerMovement : MonoBehaviour
                 rotation.z = rotationAxis.z;
                 rotation.w = (float)Math.Cos(halfPitchDeltaRadians);
                 pitchOrientation *= rotation;
-                float yawRadians = yawOrientation.eulerAngles.y * ((float)Math.PI / 180.0f);
-                Vector3 camPosition =
-                    new Vector3((float)Math.Sin(yawRadians), player.cameraHeightOffset, (float)Math.Cos(yawRadians))
-                    * player.cameraLurchOffset;
-                player.bodyCamera.transform.SetLocalPositionAndRotation(camPosition, Quaternion.identity);
-                player.bodyCamera.transform.rotation = yawOrientation * pitchOrientation;
             }
         }
 
@@ -106,7 +101,22 @@ public class PlayerMovement : MonoBehaviour
             );
         }
     }
-    
+
+    // rather than rotating the whole object, we just move the camera along a circular track, like a little
+    // crown, and point the camera away from the body. this way, we don't have to deal with physics messing
+    // up the smoothness of the body's yaw rotation, or god forbid using torque to rotate the head (yech)
+    void UpdateCamera()
+    {
+        float yawRadians = yawOrientation.eulerAngles.y * ((float)Math.PI / 180.0f);
+        Vector3 camPosition =
+            new Vector3(
+                (float)Math.Sin(yawRadians) * player.cameraLurchOffset,
+                player.cameraHeightOffset,
+                (float)Math.Cos(yawRadians) * player.cameraLurchOffset
+            );
+        player.bodyCamera.transform.SetLocalPositionAndRotation(camPosition, yawOrientation * pitchOrientation);
+    }
+
     void ApplyFriction()
     {
         const float FRICTION_MULTIPLIER = 2.0f;
