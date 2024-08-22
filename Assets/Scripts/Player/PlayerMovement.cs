@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+enum PlayerMoveState
+{
+    Paused, Moving
+}
+
 public class PlayerMovement : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         player = GetComponent<Player>();
@@ -17,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     {
         UpdateYaw(lookInput);
         UpdatePitch(lookInput);
+        UpdateHeadBob();
         UpdateCamera();
         UpdateTranslation(moveInput);
     }
@@ -104,14 +109,15 @@ public class PlayerMovement : MonoBehaviour
 
     // rather than rotating the whole object, we just move the camera along a circular track, like a little
     // crown, and point the camera away from the body. this way, we don't have to deal with physics messing
-    // up the smoothness of the body's yaw rotation, or god forbid using torque to rotate the head (yech)
+    // up the smoothness of the body's yaw rotation, or god forbid using torque to rotate the head (yech).
+    // in short, camera's orientation is everything and the body never turns.
     void UpdateCamera()
     {
         float yawRadians = yawOrientation.eulerAngles.y * ((float)Math.PI / 180.0f);
         Vector3 camPosition =
             new Vector3(
                 (float)Math.Sin(yawRadians) * player.cameraLurchOffset,
-                player.cameraHeightOffset,
+                player.cameraHeightOffset + HeadBobHeightOffset,
                 (float)Math.Cos(yawRadians) * player.cameraLurchOffset
             );
         player.bodyCamera.transform.SetLocalPositionAndRotation(camPosition, yawOrientation * pitchOrientation);
@@ -148,13 +154,15 @@ public class PlayerMovement : MonoBehaviour
     
     void UpdateTranslation(Vector2 moveInput)
     {
-        // apply friction to slow down faster when not accelerating
+        // apply extra friction to slow down faster when not accelerating
         if (moveInput.SqrMagnitude() < 1e-5f)
         {
+            state = PlayerMoveState.Paused;
             ApplyFriction();
             return;
         }
 
+        state = PlayerMoveState.Moving;
         moveInput.Normalize();
 
         float runModifier = player.IsRunning() ? player.runSpeedMultiplier : 1.0f;
@@ -192,6 +200,55 @@ public class PlayerMovement : MonoBehaviour
         player.rigidBody.AddForce(worldMoveInput);
     }
 
+    void UpdateHeadBob()
+    {
+        const float PERIOD_MULTIPLIER = 3.0f;
+        const float AMPLITUDE_MULTIPLIER = 0.5f;
+
+        if (player.headBobFrequency == 0.0f || player.headBobVerticalIntensity == 0.0f)
+        {
+            HeadBobHeightOffset = 0.0f;
+            return;
+        }
+        
+        float headBobPeriod;
+        float headBobAmplitude;
+        if (state == PlayerMoveState.Paused)
+        {
+            headBobPeriod = 1.2f;
+            headBobAmplitude = 0.3f;
+        }
+        else
+        {
+            if (player.IsRunning())
+            {
+                headBobPeriod = 1.0f / player.runSpeedMultiplier;
+                headBobAmplitude = 0.7f;
+            }
+            else
+            {
+                headBobPeriod = 1.0f;
+                headBobAmplitude = 1.0f;
+            }
+        }
+
+        float frequencyParamValue = 1.0f / (player.headBobFrequency * 1.5f + 0.5f);
+        float amplitudeParamValue = player.headBobVerticalIntensity * 2.0f;
+
+        float TargetOffset = 0.0f;
+        float SeekTargetSpeed = 0.02f;
+        float moveSpeed = player.rigidBody.velocity.magnitude;
+        if (moveSpeed > 3.0f)
+        {
+            headBobPeriod *= (1.0f / player.walkSpeed) * PERIOD_MULTIPLIER * frequencyParamValue;
+            headBobAmplitude *= (1.0f / player.walkSpeed) * AMPLITUDE_MULTIPLIER * amplitudeParamValue;
+            TargetOffset = Mathf.Sin(HeadBobTime * (2.0f * Mathf.PI) / headBobPeriod) * headBobAmplitude;
+            SeekTargetSpeed = 0.2f;
+        }
+        HeadBobHeightOffset += (TargetOffset - HeadBobHeightOffset) * SeekTargetSpeed;
+        HeadBobTime += gameManager.deltaTime;
+    }
+
     // if we don't skip the first few frames, we often end up looking at the ground or sky
     private bool SkipUpdateFirstFewFrames()
     {
@@ -202,4 +259,8 @@ public class PlayerMovement : MonoBehaviour
     private GameManager gameManager;
     private Quaternion yawOrientation;
     private Quaternion pitchOrientation;
+
+    private float HeadBobHeightOffset;
+    private float HeadBobTime;
+    private PlayerMoveState state = PlayerMoveState.Paused;
 }

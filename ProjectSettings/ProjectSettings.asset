@@ -915,11 +915,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: f5705bb5-c613-4cce-af1f-afb8a9f3d59b
+  cloudProjectId: f83beba3-c219-49d8-8b6f-04e7c009839e
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Scream Secrets
-  organizationId: uplakankus21
+  projectName: TestUnityProject
+  organizationId: cautiontothebirds
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
