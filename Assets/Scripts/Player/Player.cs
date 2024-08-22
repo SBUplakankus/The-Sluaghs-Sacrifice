@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
         Transform[] ChildTransforms = GetComponentsInChildren<Transform>();
         foreach (Transform ChildTransform in ChildTransforms)
         {
-            if (ChildTransform.gameObject.name == "Body Camera")
+            if (ChildTransform.gameObject.name == "Main Camera")
             {
                 bodyCamera = ChildTransform.gameObject;
             }
