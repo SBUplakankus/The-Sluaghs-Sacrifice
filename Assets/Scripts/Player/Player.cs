@@ -2,10 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public enum PlayerMoveMode
 {
     Fly, Walk
+}
+
+public struct PlayerInventory
+{
+    public bool[] KeyOwned;
 }
 
 public class Player : MonoBehaviour
@@ -28,11 +34,17 @@ public class Player : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         Cursor.lockState = CursorLockMode.Locked;
         tickCounter = 0;
+
+        // so... no inline arrays? what... I cant' even...
+        const int MAX_KEYS = 10;
+        inventory.KeyOwned = new bool[MAX_KEYS]; // filled with 0/false by default
     }
 
     private void LateUpdate()
     {
         ValidatePosition();
+        UpdateCandidatePickupItem();
+        UpdatePickUpItems();
         tickCounter += 1;
     }
 
@@ -54,6 +66,108 @@ public class Player : MonoBehaviour
         {
             noGroundPanicTimer = 0.0f;
         }
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
+    void UpdateCandidatePickupItem()
+    {
+        if (bPickingUpItem)
+        {
+            return;
+        }
+        bForceVeryLowFlashlightIntensity = false;
+
+        bool bDidHit = Physics.Raycast(
+            bodyCamera.transform.position,
+            bodyCamera.transform.forward,
+            out RaycastHit hit,
+            ItemGrabDistance,
+            1 << LayerMask.NameToLayer("Items")
+        );
+
+        if (bDidHit)
+        {
+            candidatePickupItem = hit.transform.gameObject;
+            bCandidatePickupItemExists = true;
+            bForceVeryLowFlashlightIntensity = true;
+            candidatePickupItem.GetComponent<Key>().SetLightActive(true);
+        }
+        else if (bCandidatePickupItemExists)
+        {
+            candidatePickupItem.GetComponent<Key>().SetLightActive(false);
+            candidatePickupItem = null;
+            bCandidatePickupItemExists = false;
+        }
+
+        if (bDebugDraw && bCandidatePickupItemExists)
+        {
+            Debug.DrawLine(
+                candidatePickupItem.transform.position,
+                candidatePickupItem.transform.position + Vector3.up,
+                Color.magenta);
+        }
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
+    void UpdatePickUpItems()
+    {
+        if (!bPickingUpItem)
+        {
+            return;
+        }
+
+        Vector3 endLocation = TargetPickupHoverLocation();
+        if (pickupTime > PICKUP_TIME_MAX)
+        {
+            int typeIndex = (int)pickingUpItem.GetComponent<Key>().type;
+            inventory.KeyOwned[typeIndex] = true;
+            Destroy(pickingUpItem);
+            pickingUpItem = null;
+            bPickingUpItem = false;
+        }
+        else if (pickupTime > PICKUP_HOVER_TIME)
+        {
+            Vector3 targetPosition;
+            if (pickupTime < PICKUP_HOVER_TIME + 0.2f)
+            {
+                targetPosition = endLocation + Vector3.up * 1.0f;
+            }
+            else
+            {
+                targetPosition = endLocation - Vector3.up * 5.0f;
+            }
+
+            Vector3 toTarget = (targetPosition - pickingUpItem.transform.position);
+            pickingUpItem.transform.position += toTarget * (1.0f * gameManager.deltaTime);
+        }
+        else if (pickupTime > PICKUP_ATTRACTION_TIME)
+        {
+            Vector3 rotationAxis = (Vector3.up * 0.65f + Vector3.right * 0.35f).normalized;
+            pickingUpItem.transform.RotateAround(pickingUpItem.transform.position, rotationAxis,
+                30.0f * gameManager.deltaTime);
+        }
+        else
+        {
+            Vector3 currentLocation = pickingUpItem.transform.position;
+            float sigmoidX = Mathf.Clamp(pickupTime / PICKUP_ATTRACTION_TIME, 0.0f, 1.0f) * 6.0f - 3.0f;
+            float sigmoidVal = 1.0f / (1 + Mathf.Exp(-sigmoidX));
+            float targetDistance = originalPickupDistance * sigmoidVal;
+            Vector3 currentDiff = endLocation - currentLocation;
+            float currentDistanceSq = currentDiff.sqrMagnitude;
+
+            if (currentDistanceSq > 1e-7f)
+            {
+                Vector3 moveNormal = currentDiff * (1.0f / Mathf.Sqrt(currentDistanceSq));
+                Vector3 projectedStart = endLocation - moveNormal * originalPickupDistance;
+                Vector3 targetLocation = projectedStart + moveNormal * targetDistance;
+                pickingUpItem.transform.position += (targetLocation - currentLocation) * 0.5f;
+                Vector3 rotationAxis = (Vector3.up * 0.65f + Vector3.right * 0.35f).normalized;
+                pickingUpItem.transform.RotateAround(pickingUpItem.transform.position, rotationAxis,
+                    30.0f * gameManager.deltaTime);
+            }
+        }
+
+        pickupTime += gameManager.deltaTime;
     }
 
     bool CheckGroundIsBeneath()
@@ -125,6 +239,24 @@ public class Player : MonoBehaviour
         return false;
     }
 
+    public void TryPickupItem()
+    {
+        if (bPickingUpItem)
+        {
+            return;
+        }
+        if (!bCandidatePickupItemExists)
+        {
+            return;
+        }
+        pickupTime = 0.0f;
+        pickingUpItem = candidatePickupItem;
+        originalPickupDistance = (TargetPickupHoverLocation() - pickingUpItem.transform.position).magnitude;
+        candidatePickupItem = null;
+        bPickingUpItem = true;
+        bCandidatePickupItemExists = false;
+    }
+
     public bool IsCheckpointSet()
     {
         return bCheckpointSet;
@@ -145,11 +277,20 @@ public class Player : MonoBehaviour
         return moveMode;
     }
 
+    private Vector3 TargetPickupHoverLocation()
+    {
+        return bodyCamera.transform.position + bodyCamera.transform.forward * 0.85f;
+    }
+
     private const float WALK_SPEED_DEFAULT = 7.8f;
     private const float RUN_SPEED_MULTIPLIER_DEFAULT = 1.4f;
     private const float FLY_SPEED_MULTIPLIER_DEFAULT = 4.0f;
     private const float ROTATE_SPEED_DEFAULT = 360.0f;
     private const float FRICTION_COEF_DEFAULT = 0.9f;
+    private const float ITEM_GRAB_DISTANCE_DEFAULT = 3.8f;
+    private const float PICKUP_TIME_MAX = 6.0f;
+    private const float PICKUP_ATTRACTION_TIME = PICKUP_TIME_MAX * 0.7f;
+    private const float PICKUP_HOVER_TIME = PICKUP_TIME_MAX * 0.85f;
 
     // flip this off for shipping so players don't fly around
     public bool bAllowDebugInput = true;
@@ -226,16 +367,27 @@ public class Player : MonoBehaviour
 
     public KeyCode RunKeyCode = KeyCode.LeftShift;
 
+    public float ItemGrabDistance = ITEM_GRAB_DISTANCE_DEFAULT;
+
     private GameManager gameManager;
     public GameObject bodyCamera;
     public Rigidbody rigidBody;
     private CapsuleCollider capsuleCollider;
+    private PlayerInventory inventory;
 
     public int tickCounter;
     private PlayerMoveMode moveMode = PlayerMoveMode.Walk;
     private bool bRunning;
     private bool bOnGround;
     private float noGroundPanicTimer;
+
+    public bool bForceVeryLowFlashlightIntensity;
+    private bool bPickingUpItem;
+    private bool bCandidatePickupItemExists;
+    private GameObject candidatePickupItem;
+    private GameObject pickingUpItem;
+    private float originalPickupDistance;
+    private float pickupTime;
     
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // ----------------------------------------------------------------------------------------------------------- debug

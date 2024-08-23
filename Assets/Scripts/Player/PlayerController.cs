@@ -25,6 +25,10 @@ public class PlayerController : MonoBehaviour
             Vector2 moveInput = GetMoveInput();
             Vector2 mouseInput = GetMouseInput();
             playerMovement.UpdateMoveAndLook(moveInput, mouseInput);
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                player.TryPickupItem();   
+            }
         }
         if (player.bAllowDebugInput)
         {
