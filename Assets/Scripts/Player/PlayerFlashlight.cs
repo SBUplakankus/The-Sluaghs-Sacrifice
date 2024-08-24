@@ -49,9 +49,10 @@ public class PlayerFlashlight : MonoBehaviour
 
         Vector3 pos = player.bodyCamera.transform.position;
         Vector3 forward = player.bodyCamera.transform.forward;
+        Vector3 forward2d = new Vector3(forward.x, 0.0f, forward.z);
         
         positionTarget = player.transform.position
-          + forward * HoldOffset.z
+          + forward2d * HoldOffset.z
           + player.bodyCamera.transform.right * HoldOffset.x;
         
         int layerMask = int.MaxValue;
