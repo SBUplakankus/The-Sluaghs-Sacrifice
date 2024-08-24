@@ -52,7 +52,7 @@ Light:
   m_InnerSpotAngle: 18.659851
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -133,8 +133,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _flashlightWeight: 0.199
   HoldOffset: {x: 0.28, y: 0, z: 0.35}
-  farIntensity: 500
-  nearIntensity: 50
+  farIntensity: 250
+  nearIntensity: 65
 --- !u!1 &5715704749606856372
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,18 +192,23 @@ MonoBehaviour:
   bDebugDraw: 0
   mouseInputSpeed: 360
   cameraHeightOffset: 0.55
-  cameraLurchOffset: 0.12
-  _headBobFrequency: 0.4
-  _headBobVerticalIntensity: 0.25
-  _headWeight: 0.68
-  walkSpeed: 5.6
+  cameraLurchOffset: 0.05
+  _headBobFrequency: 0.637
+  _headBobVerticalIntensity: 0.105
+  _headWeight: 0.701
+  walkSpeed: 3.5
   _runSpeedMultiplier: 1.4
   _flySpeedMultiplier: 4
   _frictionCoef: 0.9
   RunKeyCode: 304
+  ItemGrabDistance: 3.8
+  stepHeight: 0.4
   bodyCamera: {fileID: 0}
   rigidBody: {fileID: 0}
+  capsuleCollider: {fileID: 0}
   tickCounter: 0
+  bForceVeryLowFlashlightIntensity: 0
+  bSteppin: 0
 --- !u!114 &1014152146770685757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,8 +318,8 @@ CapsuleCollider:
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.75
-  m_Height: 2.5
+  m_Radius: 0.25
+  m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &6942036587740179816
@@ -326,7 +331,7 @@ Rigidbody:
   m_GameObject: {fileID: 5715704749606856372}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0.98
+  m_Drag: 0
   m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -339,7 +344,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
@@ -409,7 +414,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 60
   orthographic: 0

@@ -45,7 +45,7 @@ public class PlayerFlashlight : MonoBehaviour
     void UpdateState_InUseCenterView()
     {
         const float FLASHLIGHT_SPEED_MULTIPLIER = 20.0f;
-        const float HIT_NEAR_DIST = 3.0f;
+        const float HIT_NEAR_DIST = 20.0f;
         
         positionTarget = player.transform.position
           + player.bodyCamera.transform.forward * HoldOffset.z
@@ -64,18 +64,22 @@ public class PlayerFlashlight : MonoBehaviour
         
         // if a raycast from the camera hit something, focus the light on it. if the thing is close, move
         // the light overhead so we can better see the thing.
-        if (bHitSomething)
+        if (bHitSomething && !player.bSteppin)
         {
+            const float MAX_HEIGHT_OFFSET = 1.0f;
             viewTarget = (hit.point - transform.position).normalized;
+            float hit_point_raised = hit.point.y + 0.2f;
+            if (hit_point_raised > positionTarget.y && player.GetMoveMode() != PlayerMoveMode.Fly)
+            {
+                positionTarget.y += Mathf.Clamp((hit.point.y + 0.8f) - positionTarget.y, 0.0f, MAX_HEIGHT_OFFSET);
+            }
             float distSqFromTarget = (hit.point - player.bodyCamera.transform.position).sqrMagnitude;
             if (distSqFromTarget < HIT_NEAR_DIST * HIT_NEAR_DIST)
             {
-                positionTarget = (positionTarget * 0.75f +
-                                  ((hit.point - player.bodyCamera.transform.position).normalized *
-                                   (HIT_NEAR_DIST * 0.25f * 0.25f)));
                 if (!player.bForceVeryLowFlashlightIntensity)
                 {
-                    targetIntensity = nearIntensity;
+                    float dist = Mathf.Sqrt(distSqFromTarget);
+                    targetIntensity = nearIntensity * Mathf.Max(dist / HIT_NEAR_DIST, 0.1f);
                 }
             }
         }
@@ -121,7 +125,7 @@ public class PlayerFlashlight : MonoBehaviour
     [SerializeField, Range(0.01f, 0.5f)] private float _flashlightWeight = 0.2f;
     public Vector3 HoldOffset = new Vector3(0.28f, 0.0f, 0.35f);
 
-    public float farIntensity = 500.0f;
+    public float farIntensity = 250.0f;
     public float nearIntensity = 50.0f;
 
     private float targetIntensity;

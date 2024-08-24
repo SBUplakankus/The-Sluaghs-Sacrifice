@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+// TODO: 
+// 1. step up stairs
+// 2. get flashlight working in real play environment
+// 3. playtest to fix fall through floor shit
+// 4. make it so you can rotate player char on placement
+
 public enum PlayerMoveMode
 {
     Fly, Walk
@@ -362,17 +368,19 @@ public class Player : MonoBehaviour
             bCheckpointSet = true; 
         }
     }
+    
     private PlayerCheckpoint _checkpoint;
     private bool bCheckpointSet;
 
     public KeyCode RunKeyCode = KeyCode.LeftShift;
 
     public float ItemGrabDistance = ITEM_GRAB_DISTANCE_DEFAULT;
+    public float stepHeight = 0.4f;
 
     private GameManager gameManager;
     public GameObject bodyCamera;
     public Rigidbody rigidBody;
-    private CapsuleCollider capsuleCollider;
+    public CapsuleCollider capsuleCollider;
     private PlayerInventory inventory;
 
     public int tickCounter;
@@ -388,6 +396,7 @@ public class Player : MonoBehaviour
     private GameObject pickingUpItem;
     private float originalPickupDistance;
     private float pickupTime;
+    public bool bSteppin;
     
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // ----------------------------------------------------------------------------------------------------------- debug
