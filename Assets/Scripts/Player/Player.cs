@@ -93,23 +93,33 @@ public class Player : MonoBehaviour
 
         if (bDidHit)
         {
-            candidatePickupItem = hit.transform.gameObject;
-            bCandidatePickupItemExists = true;
+            candidateUseObject = hit.transform.gameObject;
+            bCandidateUseObjectExists = true;
             bForceVeryLowFlashlightIntensity = true;
-            candidatePickupItem.GetComponent<Key>().SetLightActive(true);
+            if (candidateUseObject.CompareTag("anykey"))
+            {
+                candidateUseObject.GetComponent<Key>().SetLightActive(true);
+            }
+            else if (candidateUseObject.CompareTag("door"))
+            {
+                // ...
+            }
         }
-        else if (bCandidatePickupItemExists)
+        else if (bCandidateUseObjectExists)
         {
-            candidatePickupItem.GetComponent<Key>().SetLightActive(false);
-            candidatePickupItem = null;
-            bCandidatePickupItemExists = false;
+            if (candidateUseObject.CompareTag("anykey"))
+            {
+                candidateUseObject.GetComponent<Key>().SetLightActive(false);
+            }
+            candidateUseObject = null;
+            bCandidateUseObjectExists = false;
         }
 
-        if (bDebugDraw && bCandidatePickupItemExists)
+        if (bDebugDraw && bCandidateUseObjectExists)
         {
             Debug.DrawLine(
-                candidatePickupItem.transform.position,
-                candidatePickupItem.transform.position + Vector3.up,
+                candidateUseObject.transform.position,
+                candidateUseObject.transform.position + Vector3.up,
                 Color.magenta);
         }
     }
@@ -245,22 +255,30 @@ public class Player : MonoBehaviour
         return false;
     }
 
-    public void TryPickupItem()
+    // ReSharper disable Unity.PerformanceAnalysis
+    public void TryUse()
     {
         if (bPickingUpItem)
         {
             return;
         }
-        if (!bCandidatePickupItemExists)
+        if (!bCandidateUseObjectExists)
         {
             return;
         }
+        if (candidateUseObject.CompareTag("anykey"))
+        {
+            pickingUpItem = candidateUseObject;
+            originalPickupDistance = (TargetPickupHoverLocation() - pickingUpItem.transform.position).magnitude;
+            bPickingUpItem = true;
+        }
+        else if (candidateUseObject.CompareTag("door"))
+        {
+            candidateUseObject.transform.GetComponentInParent<Door>().ToggleOpen(transform.position);
+        }
         pickupTime = 0.0f;
-        pickingUpItem = candidatePickupItem;
-        originalPickupDistance = (TargetPickupHoverLocation() - pickingUpItem.transform.position).magnitude;
-        candidatePickupItem = null;
-        bPickingUpItem = true;
-        bCandidatePickupItemExists = false;
+        candidateUseObject = null;
+        bCandidateUseObjectExists = false;
     }
 
     public bool IsCheckpointSet()
@@ -391,8 +409,8 @@ public class Player : MonoBehaviour
 
     public bool bForceVeryLowFlashlightIntensity;
     private bool bPickingUpItem;
-    private bool bCandidatePickupItemExists;
-    private GameObject candidatePickupItem;
+    private bool bCandidateUseObjectExists;
+    private GameObject candidateUseObject;
     private GameObject pickingUpItem;
     private float originalPickupDistance;
     private float pickupTime;
