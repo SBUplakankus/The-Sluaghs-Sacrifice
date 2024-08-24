@@ -9,6 +9,7 @@ TagManager:
   - key3
   - key4
   - anykey
+  - door
   layers:
   - Default
   - TransparentFX

@@ -170,7 +170,7 @@ public class PlayerFlashlight : MonoBehaviour
     public float nearIntensity = 130.0f;
 
     private float targetIntensity;
-    private Light light;
+    private new Light light;
     private Vector3 positionTarget;
     private Player player;
     private GameManager gameManager;
