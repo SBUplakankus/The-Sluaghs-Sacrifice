@@ -192,11 +192,11 @@ MonoBehaviour:
   bDebugDraw: 0
   mouseInputSpeed: 360
   cameraHeightOffset: 0.55
-  cameraLurchOffset: 0.01
-  _headBobFrequency: 0.608
-  _headBobVerticalIntensity: 0.114
-  _headWeight: 0.68
-  walkSpeed: 3.2
+  cameraLurchOffset: 0.05
+  _headBobFrequency: 0.637
+  _headBobVerticalIntensity: 0.105
+  _headWeight: 0.701
+  walkSpeed: 3.5
   _runSpeedMultiplier: 1.4
   _flySpeedMultiplier: 4
   _frictionCoef: 0.9
@@ -318,8 +318,8 @@ CapsuleCollider:
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.2
-  m_Height: 2.5
+  m_Radius: 0.25
+  m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &6942036587740179816
@@ -344,7 +344,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
