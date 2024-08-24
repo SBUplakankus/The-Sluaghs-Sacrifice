@@ -358,7 +358,7 @@ public class PlayerMovement : MonoBehaviour
                 float stepSize2D = (trueVelocity2DProjected * gameManager.deltaTime).magnitude;
                 float stepSizeTowardStepUp = Vector3.Dot(trueVelocityProjected * gameManager.deltaTime, toStepNorm);
                 float yNeeded = Mathf.Sqrt(stepSizeTowardStepUp * stepSizeTowardStepUp + stepSize2D * stepSize2D);
-                player.rigidBody.velocity = new Vector3(trueVelocity.x, yNeeded * 0.5f / gameManager.deltaTime, trueVelocity.z);
+                player.rigidBody.velocity = new Vector3(trueVelocity.x, yNeeded * 0.6f / gameManager.deltaTime, trueVelocity.z);
             }
         }
         else if (player.bDebugDraw)
