@@ -5,13 +5,35 @@ namespace UI
 {
     public class UIController : MonoBehaviour
     {
+        [Header("UI Elements")]
         [SerializeField] private GameObject interactPopUp;
         [SerializeField] private GameObject pauseMenu;
+        [SerializeField] private GameObject flashInfo;
+        [SerializeField] private GameObject inventoryPanel;
+
+        [Header("UI Checks")] 
+        private bool _inventoryOpen;
+        
 
         private void Start()
         {
             HideInteract();
             HidePauseMenu();
+            HideInventory();
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                if(_inventoryOpen)
+                    HideInventory();
+                else
+                {
+                    ShowInventory();
+                }
+            }
+                
         }
 
         /// <summary>
@@ -44,6 +66,24 @@ namespace UI
         public void HideInteract()
         {
             interactPopUp.SetActive(false);
+        }
+        
+        /// <summary>
+        /// Show the inventory
+        /// </summary>
+        public void ShowInventory()
+        {
+            inventoryPanel.SetActive(true);
+            _inventoryOpen = true;
+        }
+        
+        /// <summary>
+        /// Hide the inventory
+        /// </summary>
+        public void HideInventory()
+        {
+            inventoryPanel.SetActive(false);
+            _inventoryOpen = false;
         }
     }
 }
