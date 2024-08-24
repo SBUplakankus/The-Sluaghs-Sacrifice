@@ -24,6 +24,16 @@ public class PlayerMovement : MonoBehaviour
         UpdateHeadBob();
         UpdateCamera();
         UpdateTranslation(moveInput);
+        UpdateGravity();
+        UpdateStairMovement(moveInput);
+    }
+
+    private void UpdateGravity()
+    {
+        if (player.GetMoveMode() != PlayerMoveMode.Fly && !player.bSteppin)
+        {
+            player.rigidBody.AddForce(Vector3.down * (9.8f * player.rigidBody.mass * 1.5f));
+        }
     }
     
     private void UpdateYaw(Vector2 mouseDelta)
@@ -41,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
             yawOrientation.eulerAngles += new Vector3(euler.x, euler.y + targetYawDelta, 0.0f);
          }
     }
+    
     void UpdatePitch(Vector2 mouseDelta)
     {
         const float MAX_PITCH = 70.0f;
@@ -168,27 +179,26 @@ public class PlayerMovement : MonoBehaviour
         float runModifier = player.IsRunning() ? player.runSpeedMultiplier : 1.0f;
 
         Vector3 moveFore, moveRight;
-        const float FORCE_MULTIPLIER = 350.0f;
+        const float ACCEL = 17.0f;
         if (player.GetMoveMode() == PlayerMoveMode.Walk)
         {
             float maxSpeed = player.walkSpeed * runModifier;
             player.rigidBody.maxLinearVelocity = maxSpeed;
-            float speedStep = maxSpeed * gameManager.deltaTime * FORCE_MULTIPLIER;
+            // float speedStep = maxSpeed * gameManager.deltaTime * FORCE_MULTIPLIER;
             Transform tForm = player.bodyCamera.transform;
             Vector3 forward3d = tForm.forward;
             Vector2 forward2d = new Vector2(forward3d.z, forward3d.x).normalized;
-            moveFore = new Vector3(forward2d.y, 0.0f, forward2d.x) * (moveInput.y * speedStep);
-            moveRight = tForm.right * (moveInput.x * speedStep);
+            moveFore = new Vector3(forward2d.y, 0.0f, forward2d.x) * (moveInput.y * ACCEL);
+            moveRight = tForm.right * (moveInput.x * ACCEL);
         }
         else // Fly
         {
             float maxSpeed = player.walkSpeed * runModifier * player.flySpeedMultiplier;
             player.rigidBody.maxLinearVelocity = maxSpeed;
-            float speedStep = maxSpeed * gameManager.deltaTime * FORCE_MULTIPLIER;
             Transform tForm = player.bodyCamera.transform;
             Vector3 forward3d = tForm.forward;
-            moveFore = forward3d * (moveInput.y * speedStep);
-            moveRight = tForm.right * (moveInput.x * speedStep);
+            moveFore = forward3d * (moveInput.y * ACCEL);
+            moveRight = tForm.right * (moveInput.x * ACCEL);
         }
 
         // apply friction when accelerating opposite our velocity so we change direction faster
@@ -197,7 +207,7 @@ public class PlayerMovement : MonoBehaviour
         {
             ApplyFriction();
         }
-        player.rigidBody.AddForce(worldMoveInput);
+        player.rigidBody.AddForce(worldMoveInput * player.rigidBody.mass);
     }
 
     void UpdateHeadBob()
@@ -247,6 +257,114 @@ public class PlayerMovement : MonoBehaviour
         }
         HeadBobHeightOffset += (TargetOffset - HeadBobHeightOffset) * SeekTargetSpeed;
         HeadBobTime += gameManager.deltaTime;
+    }
+
+    void UpdateStairMovement(Vector3 moveInput)
+    {
+        const float COS_PI_OVER_6 = 0.866f;
+        const float MIN_SPEED = 1.5f;
+
+        player.bSteppin = false;
+        player.capsuleCollider.height = 2.0f;
+
+        Vector3 velocityCurrent;
+        if (player.rigidBody.velocity.sqrMagnitude < MIN_SPEED * MIN_SPEED)
+        {
+            if (moveInput.sqrMagnitude < 1e-3f) 
+            {
+                return;
+            }
+            else
+            {
+                Transform tForm = player.bodyCamera.transform;
+                Vector3 forward3d = tForm.forward;
+                Vector3 moveFore = new Vector3(forward3d.x, 0.0f, forward3d.z).normalized * (moveInput.y * player.walkSpeed);
+                Vector3 moveRight = tForm.right * (moveInput.x * player.walkSpeed);
+                velocityCurrent = moveFore + moveRight;
+            }
+        }
+        else
+        {
+            velocityCurrent = player.rigidBody.velocity;
+        }
+
+        Vector3 velocity2D = new Vector3(velocityCurrent.x, 0.0f, velocityCurrent.z);
+        Vector3 velocity2DNorm = velocity2D.normalized;
+
+        float colliderHalfHeight = 1.0f;
+        Vector3 velocityOffset = (velocity2D * gameManager.deltaTime) + velocity2DNorm * (player.capsuleCollider.radius + 0.1f);
+        Vector3 stairCheckBegin = player.transform.position + velocityOffset; 
+
+        bool bHitSomething = Physics.Raycast(
+            stairCheckBegin, Vector3.down, out RaycastHit hit1, 2.0f
+        );
+        
+        float playerBottomY = player.transform.position.y - colliderHalfHeight;
+        float yDist = hit1.point.y - playerBottomY;
+        float hitDP = Vector3.Dot(hit1.normal, Vector3.up);
+        
+        if (bHitSomething && hitDP >= COS_PI_OVER_6 && yDist <= player.stepHeight
+        ) {
+            if (player.bDebugDraw)
+            {
+                Debug.DrawLine(stairCheckBegin, hit1.point);
+            }
+            Vector3 playerBottom =
+                new Vector3(player.transform.position.x, playerBottomY, player.transform.position.z
+            );
+            Vector3 extentYOffset = new Vector3(0.0f, player.capsuleCollider.bounds.extents.y, 0.0f);
+            RaycastHit useHit = hit1;
+            RaycastHit prevHit = hit1;
+            for (int i = 0; i < 5; ++i)
+            {
+                Vector3 iterPos = prevHit.point + extentYOffset;
+                Vector3 newCheckBegin = iterPos + velocityOffset * 0.5f;
+                
+                bHitSomething = Physics.Raycast(
+                    newCheckBegin, Vector3.down, out RaycastHit hit, 2.0f
+                );
+                
+                yDist = hit.point.y - prevHit.point.y;
+
+                if (bHitSomething && Vector3.Dot(hit1.normal, Vector3.up) >= COS_PI_OVER_6 && yDist <= player.stepHeight)
+                {
+                    if (player.bDebugDraw)
+                    {
+                        Debug.DrawLine(newCheckBegin, hit.point);
+                    }
+                    useHit = hit;
+                }
+                else
+                {
+                    break;
+                }
+                prevHit = hit;
+            }
+
+            float useHitYDist = useHit.point.y - playerBottomY;
+            if (player.bDebugDraw)
+            {
+                Debug.DrawLine(useHit.point, useHit.point + Vector3.up * 2.0f, Color.blue);
+            }
+            if (useHitYDist > 0.001f)
+            {
+                player.bSteppin = true;
+                player.capsuleCollider.height = 1.0f;
+
+                Vector3 toStepNorm = (useHit.point - playerBottom).normalized;
+                Vector3 trueVelocity = player.rigidBody.velocity;
+                Vector3 trueVelocityProjected = Vector3.Project(trueVelocity, velocityCurrent);
+                Vector3 trueVelocity2DProjected = Vector3.Project(trueVelocity, velocity2D.normalized);
+                float stepSize2D = (trueVelocity2DProjected * gameManager.deltaTime).magnitude;
+                float stepSizeTowardStepUp = Vector3.Dot(trueVelocityProjected * gameManager.deltaTime, toStepNorm);
+                float yNeeded = Mathf.Sqrt(stepSizeTowardStepUp * stepSizeTowardStepUp + stepSize2D * stepSize2D);
+                player.rigidBody.velocity = new Vector3(trueVelocity.x, yNeeded * 0.5f / gameManager.deltaTime, trueVelocity.z);
+            }
+        }
+        else if (player.bDebugDraw)
+        {
+            Debug.DrawLine(stairCheckBegin, stairCheckBegin + Vector3.down * 1.0f, Color.red);
+        }
     }
 
     // if we don't skip the first few frames, we often end up looking at the ground or sky
