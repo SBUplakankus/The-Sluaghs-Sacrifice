@@ -134,7 +134,7 @@ MonoBehaviour:
   _flashlightWeight: 0.199
   HoldOffset: {x: 0.28, y: 0, z: 0.35}
   farIntensity: 250
-  nearIntensity: 60
+  nearIntensity: 130
 --- !u!1 &4761867588188787991
 GameObject:
   m_ObjectHideFlags: 0
