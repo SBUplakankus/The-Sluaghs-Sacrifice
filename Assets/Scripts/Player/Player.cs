@@ -274,7 +274,7 @@ public class Player : MonoBehaviour
         }
         else if (candidateUseObject.CompareTag("door"))
         {
-            candidateUseObject.transform.GetComponentInParent<Door>().ToggleOpen(transform.position);
+            candidateUseObject.transform.GetComponentInParent<Door>().TryToggleOpen(this);
         }
         pickupTime = 0.0f;
         candidateUseObject = null;
@@ -399,7 +399,7 @@ public class Player : MonoBehaviour
     public GameObject bodyCamera;
     public Rigidbody rigidBody;
     public CapsuleCollider capsuleCollider;
-    private PlayerInventory inventory;
+    public PlayerInventory inventory;
 
     public int tickCounter;
     private PlayerMoveMode moveMode = PlayerMoveMode.Walk;

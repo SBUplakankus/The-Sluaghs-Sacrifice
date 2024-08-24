@@ -74,6 +74,19 @@ public class Door : MonoBehaviour
         }
     }
 
+    public bool TryToggleOpen(Player p)
+    {
+        if (lockedByKey != KeyType.None)
+        {
+            if (!p.inventory.KeyOwned[(int)lockedByKey])
+            {
+                return false;
+            }
+        }
+        ToggleOpen(p.transform.position);
+        return true;
+    }
+
     public void ToggleOpen(Vector3 fromPoint)
     {
         if (state == DoorState.Open)
@@ -223,6 +236,7 @@ public class Door : MonoBehaviour
         return false;
     }
 
+    // pulled from Unreal Engine (do not sell a game with this code in it)
     private float ClampAxis(float angle)
     {
         // returns Angle in the range (-360,360)
@@ -236,6 +250,7 @@ public class Door : MonoBehaviour
         return angle;
     }
 
+    // pulled from Unreal Engine (do not sell a game with this code in it)
     private float NormalizeAxis(float angle)
     {
         // returns Angle in the range [0,360)
@@ -252,6 +267,7 @@ public class Door : MonoBehaviour
     public DoorState state;
     public float targetOpenYaw = 90.0f;
     public float timeToRotate = 2.0f;
+    public KeyType lockedByKey = KeyType.None;
 
     private DoorRef[] doors;
     private float[] rotationLimits;
@@ -261,4 +277,5 @@ public class Door : MonoBehaviour
     private bool bOpenAfterClose;
     private bool bPauseRotate;
     private bool bShouldTick;
+    
 }

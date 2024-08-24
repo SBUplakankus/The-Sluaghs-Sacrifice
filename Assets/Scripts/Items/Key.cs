@@ -3,7 +3,7 @@ using UnityEngine;
 
 public enum KeyType
 {
-    Brass, Iron, Silver, Steel
+    Brass, Iron, Silver, Steel, None
 }
 
 public class Key : MonoBehaviour
