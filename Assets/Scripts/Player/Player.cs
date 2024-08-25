@@ -5,10 +5,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 // TODO: 
-// 1. step up stairs
-// 2. get flashlight working in real play environment
-// 3. playtest to fix fall through floor shit
-// 4. make it so you can rotate player char on placement
+// make it so you can rotate player char on placement
 
 public enum PlayerMoveMode
 {
@@ -20,12 +17,18 @@ public struct PlayerInventory
     public bool[] KeyOwned;
 }
 
+public enum DoorInteractResult
+{
+    None, Opening, Closing
+}
+
 public class Player : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
+        audioManager = FindObjectOfType<AudioManager>();
         Transform[] ChildTransforms = GetComponentsInChildren<Transform>();
         foreach (Transform ChildTransform in ChildTransforms)
         {
@@ -71,6 +74,41 @@ public class Player : MonoBehaviour
         else
         {
             noGroundPanicTimer = 0.0f;
+        }
+    }
+
+    void BeginPickupKey()
+    {
+        pickingUpItem = candidateUseObject;
+        originalPickupDistance = (TargetPickupHoverLocation() - pickingUpItem.transform.position).magnitude;
+        bPickingUpItem = true;
+        switch (gameManager.stage)
+        {
+        case GameStage.Stage1:
+            audioManager.PlayClip(AudioClipRef.KeyPickup_Strings);
+            break;
+        case GameStage.Stage2:
+            audioManager.PlayClip(AudioClipRef.KeyPickup_Foreboding);
+            break;
+        case GameStage.Stage3:
+            audioManager.PlayClip(AudioClipRef.KeyPickup_Whispers);
+            break;
+        case GameStage.Stage4:
+            audioManager.PlayClip(AudioClipRef.KeyPickup_Whispers);
+            break;
+        }
+    }
+
+    void BeginInteractWithDoor()
+    {
+        DoorInteractResult result = candidateUseObject.transform.GetComponentInParent<Door>().TryToggleOpen(this);
+        if (result == DoorInteractResult.Opening)
+        {
+            audioManager.PlaySequence(candidateUseObject, AudioSequence.DoorOpen);
+        }
+        else if (result == DoorInteractResult.Closing)
+        {
+            audioManager.PlaySequence(candidateUseObject, AudioSequence.DoorClose);
         }
     }
 
@@ -268,13 +306,11 @@ public class Player : MonoBehaviour
         }
         if (candidateUseObject.CompareTag("anykey"))
         {
-            pickingUpItem = candidateUseObject;
-            originalPickupDistance = (TargetPickupHoverLocation() - pickingUpItem.transform.position).magnitude;
-            bPickingUpItem = true;
+            BeginPickupKey();
         }
         else if (candidateUseObject.CompareTag("door"))
         {
-            candidateUseObject.transform.GetComponentInParent<Door>().TryToggleOpen(this);
+            BeginInteractWithDoor();
         }
         pickupTime = 0.0f;
         candidateUseObject = null;
@@ -396,6 +432,7 @@ public class Player : MonoBehaviour
     public float stepHeight = 0.4f;
 
     private GameManager gameManager;
+    private AudioManager audioManager;
     public GameObject bodyCamera;
     public Rigidbody rigidBody;
     public CapsuleCollider capsuleCollider;

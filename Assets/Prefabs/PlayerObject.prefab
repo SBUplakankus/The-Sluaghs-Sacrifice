@@ -274,6 +274,7 @@ GameObject:
   - component: {fileID: 2530615329167448973}
   - component: {fileID: 3727140305639757657}
   - component: {fileID: 1014152146770685757}
+  - component: {fileID: 3611779834542001713}
   - component: {fileID: 6954949777109023407}
   - component: {fileID: 3943160617410847965}
   - component: {fileID: 5969878369838258889}
@@ -354,6 +355,23 @@ MonoBehaviour:
   bProgressiveCheckpoints: 0
   player: {fileID: 0}
   deltaTime: 0
+  stage: 0
+--- !u!114 &3611779834542001713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5715704749606856372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f31fe9d97bd40899b48728a62478942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupSource: {fileID: 0}
+  keyPickupStrings: {fileID: 8300000, guid: 734dc3a214a44d74890fe2c30a8d4d67, type: 3}
+  keyPickupForeboding: {fileID: 8300000, guid: 310738694b0e17a4c8402642db2a5842, type: 3}
+  keyPickupWhispers: {fileID: 8300000, guid: 45c97148d2ffe0d4f9ea9b6d7f2b75b9, type: 3}
 --- !u!114 &6954949777109023407
 MonoBehaviour:
   m_ObjectHideFlags: 0
