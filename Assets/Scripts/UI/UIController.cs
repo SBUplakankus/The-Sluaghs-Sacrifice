@@ -10,9 +10,11 @@ namespace UI
         [SerializeField] private GameObject pauseMenu;
         [SerializeField] private GameObject flashInfo;
         [SerializeField] private GameObject inventoryPanel;
+        [SerializeField] private GameObject notePickUp;
 
         [Header("UI Checks")] 
         private bool _inventoryOpen;
+        private bool _noteOpen;
         
 
         private void Start()
@@ -84,6 +86,18 @@ namespace UI
         {
             inventoryPanel.SetActive(false);
             _inventoryOpen = false;
+        }
+
+        public void ShowNote()
+        {
+            notePickUp.SetActive(true);
+            _noteOpen = true;
+        }
+
+        public void HideNote()
+        {
+            notePickUp.SetActive(false);
+            _noteOpen = false;
         }
     }
 }
