@@ -130,7 +130,7 @@ public class Player : MonoBehaviour
             bodyCamera.transform.forward,
             out RaycastHit hit,
             ItemGrabDistance,
-            1 << LayerMask.NameToLayer("Items")
+            (1 << LayerMask.NameToLayer("Items")) | (1 << LayerMask.NameToLayer("Doors"))
         );
 
         if (bDidHit)
@@ -166,6 +166,22 @@ public class Player : MonoBehaviour
         }
     }
 
+    void MoveObjectToHoverLocationAtDistance(GameObject obj, float targetDistance)
+    {
+        Vector3 currentLocation = obj.transform.position;
+        Vector3 endLocation = TargetPickupHoverLocation();
+        Vector3 currentDiff = endLocation - currentLocation;
+        float currentDistanceSq = currentDiff.sqrMagnitude;
+
+        if (currentDistanceSq > 1e-7f)
+        {
+            Vector3 moveNormal = currentDiff * (1.0f / Mathf.Sqrt(currentDistanceSq));
+            Vector3 projectedStart = endLocation - moveNormal * originalPickupDistance;
+            Vector3 targetLocation = projectedStart + moveNormal * targetDistance;
+            pickingUpItem.transform.position += (targetLocation - currentLocation) * 0.5f;
+        }
+    }
+
     // ReSharper disable Unity.PerformanceAnalysis
     void UpdatePickUpItems()
     {
@@ -174,7 +190,6 @@ public class Player : MonoBehaviour
             return;
         }
 
-        Vector3 endLocation = TargetPickupHoverLocation();
         if (pickupTime > PICKUP_TIME_MAX)
         {
             int typeIndex = (int)pickingUpItem.GetComponent<Key>().type;
@@ -185,44 +200,36 @@ public class Player : MonoBehaviour
         }
         else if (pickupTime > PICKUP_HOVER_TIME)
         {
+            Vector3 centerView = TargetPickupHoverLocation();
+            Vector3 velocity2DStep =
+                new Vector3(rigidBody.velocity.x, 0.0f, rigidBody.velocity.z) * gameManager.deltaTime;
+            centerView += velocity2DStep;
             Vector3 targetPosition;
             if (pickupTime < PICKUP_HOVER_TIME + 0.2f)
             {
-                targetPosition = endLocation + Vector3.up * 1.0f;
+                targetPosition = centerView + Vector3.up * 1.0f;
             }
             else
             {
-                targetPosition = endLocation - Vector3.up * 5.0f;
+                targetPosition = centerView - Vector3.up * 5.0f;
             }
 
             Vector3 toTarget = (targetPosition - pickingUpItem.transform.position);
-            pickingUpItem.transform.position += toTarget * (1.0f * gameManager.deltaTime);
-        }
-        else if (pickupTime > PICKUP_ATTRACTION_TIME)
-        {
-            Vector3 rotationAxis = (Vector3.up * 0.65f + Vector3.right * 0.35f).normalized;
-            pickingUpItem.transform.RotateAround(pickingUpItem.transform.position, rotationAxis,
-                30.0f * gameManager.deltaTime);
+            Vector3 newPos = pickingUpItem.transform.position;
+            newPos.x += toTarget.x * (100.0f * gameManager.deltaTime);
+            newPos.y += toTarget.y * (1.0f * gameManager.deltaTime);
+            newPos.z += toTarget.z * (100.0f * gameManager.deltaTime);
+            pickingUpItem.transform.position = newPos;
         }
         else
         {
-            Vector3 currentLocation = pickingUpItem.transform.position;
             float sigmoidX = Mathf.Clamp(pickupTime / PICKUP_ATTRACTION_TIME, 0.0f, 1.0f) * 6.0f - 3.0f;
             float sigmoidVal = 1.0f / (1 + Mathf.Exp(-sigmoidX));
             float targetDistance = originalPickupDistance * sigmoidVal;
-            Vector3 currentDiff = endLocation - currentLocation;
-            float currentDistanceSq = currentDiff.sqrMagnitude;
-
-            if (currentDistanceSq > 1e-7f)
-            {
-                Vector3 moveNormal = currentDiff * (1.0f / Mathf.Sqrt(currentDistanceSq));
-                Vector3 projectedStart = endLocation - moveNormal * originalPickupDistance;
-                Vector3 targetLocation = projectedStart + moveNormal * targetDistance;
-                pickingUpItem.transform.position += (targetLocation - currentLocation) * 0.5f;
-                Vector3 rotationAxis = (Vector3.up * 0.65f + Vector3.right * 0.35f).normalized;
-                pickingUpItem.transform.RotateAround(pickingUpItem.transform.position, rotationAxis,
-                    30.0f * gameManager.deltaTime);
-            }
+            MoveObjectToHoverLocationAtDistance(pickingUpItem, targetDistance);
+            Vector3 rotationAxis = (Vector3.up * 0.65f + Vector3.right * 0.35f).normalized;
+            pickingUpItem.transform.RotateAround(pickingUpItem.transform.position, rotationAxis,
+                30.0f * gameManager.deltaTime);
         }
 
         pickupTime += gameManager.deltaTime;
