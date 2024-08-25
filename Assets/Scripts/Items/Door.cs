@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using Mathf = UnityEngine.Mathf;
 
@@ -18,6 +19,11 @@ public class Door : MonoBehaviour
 {
     void Start()
     {
+        soundSource = gameObject.AddComponent<AudioSource>();
+        soundSource.spatialize = true;
+        soundSource.spatialBlend = 1.0f;
+        soundSource.volume = 0.8f;
+        
         doors = new DoorRef[2];
         rotationLimits = new float[6];
         startRotationYaw = new float[2];
@@ -74,17 +80,17 @@ public class Door : MonoBehaviour
         }
     }
 
-    public bool TryToggleOpen(Player p)
+    public DoorInteractResult TryToggleOpen(Player p)
     {
         if (lockedByKey != KeyType.None)
         {
             if (!p.inventory.KeyOwned[(int)lockedByKey])
             {
-                return false;
+                return DoorInteractResult.None;
             }
         }
         ToggleOpen(p.transform.position);
-        return true;
+        return state == DoorState.Closing ? DoorInteractResult.Closing : DoorInteractResult.Opening;
     }
 
     public void ToggleOpen(Vector3 fromPoint)
@@ -264,6 +270,12 @@ public class Door : MonoBehaviour
         return angle;
     }
 
+    public AudioSource soundSource;
+    public AudioClip interactClip;
+    public AudioClip openClip;
+    public AudioClip closeClip;
+    public AudioClip fullyClosedClip;
+    
     public DoorState state;
     public float targetOpenYaw = 90.0f;
     public float timeToRotate = 2.0f;
