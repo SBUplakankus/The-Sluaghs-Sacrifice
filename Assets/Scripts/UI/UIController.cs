@@ -1,10 +1,13 @@
 using System;
+using Triggers;
 using UnityEngine;
 
 namespace UI
 {
     public class UIController : MonoBehaviour
     {
+        public static UIController Instance;
+        
         [Header("UI Elements")]
         [SerializeField] private GameObject interactPopUp;
         [SerializeField] private GameObject pauseMenu;
@@ -15,13 +18,24 @@ namespace UI
         [Header("UI Checks")] 
         private bool _inventoryOpen;
         private bool _noteOpen;
+
+        [Header("UI Scripts")] 
+        private NoteDisplay _noteDisplay;
+        private InteractPopUp _interactPopUp;
         
+        private void Awake()
+        {
+            Instance = this;
+            _noteDisplay = GetComponent<NoteDisplay>();
+            _interactPopUp = GetComponent<InteractPopUp>();
+        }
 
         private void Start()
         {
             HideInteract();
             HidePauseMenu();
             HideInventory();
+            HideNote();
         }
 
         private void Update()
@@ -31,9 +45,7 @@ namespace UI
                 if(_inventoryOpen)
                     HideInventory();
                 else
-                {
                     ShowInventory();
-                }
             }
                 
         }
@@ -57,8 +69,9 @@ namespace UI
         /// <summary>
         /// Show the Interaction Text
         /// </summary>
-        public void ShowInteract()
+        public void ShowInteract(string text)
         {
+            _interactPopUp.SetPopUpText(text);
             interactPopUp.SetActive(true);
         }
         
@@ -87,8 +100,21 @@ namespace UI
             inventoryPanel.SetActive(false);
             _inventoryOpen = false;
         }
+        
+        /// <summary>
+        /// Display or Hide the Note
+        /// </summary>
+        public void HandleNoteInteraction(string text)
+        {
+            _noteDisplay.SetNoteText(text);
+            
+            if (_noteOpen)
+                HideNote();
+            else
+                ShowNote();
+        }
 
-        public void ShowNote()
+        private void ShowNote()
         {
             notePickUp.SetActive(true);
             _noteOpen = true;
