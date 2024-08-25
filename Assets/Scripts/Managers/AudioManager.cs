@@ -5,7 +5,8 @@ public enum AudioClipRef
 {
     KeyPickup_Strings,
     KeyPickup_Foreboding,
-    KeyPickup_Whispers
+    KeyPickup_Whispers,
+    DoorInteract
 }
 
 public enum AudioSequence
@@ -67,13 +68,13 @@ public class AudioManager : MonoBehaviour
          }        
     }
     
-    public void PlaySequence(GameObject gameObject, AudioSequence sequence)
+    public void PlaySequence(GameObject obj, AudioSequence sequence)
     {
         switch (sequence)
         {
         case AudioSequence.DoorOpen:
         case AudioSequence.DoorClose:
-            managingDoor = gameObject.GetComponentInParent<Door>();
+            managingDoor = obj.GetComponentInParent<Door>();
             doorSequence = sequence;
             doorSequenceStage = 0;
             managingDoor.soundSource.clip = managingDoor.interactClip;
@@ -82,7 +83,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayClip(AudioClipRef audioRef)
+    public void PlayClip(AudioClipRef audioRef, GameObject obj=null)
     {
         AudioSource source = null;
         AudioClip clip = null;
@@ -99,6 +100,14 @@ public class AudioManager : MonoBehaviour
         case AudioClipRef.KeyPickup_Whispers:
             source = pickupSource;
             clip = keyPickupWhispers;
+            break;
+        case AudioClipRef.DoorInteract:
+            if (obj != null)
+            {
+                Door door = obj.transform.GetComponentInParent<Door>();
+                door.soundSource.clip = door.interactClip;
+                door.soundSource.Play();
+            }
             break;
         }
 
