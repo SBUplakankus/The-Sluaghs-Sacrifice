@@ -19,7 +19,7 @@ public struct PlayerInventory
 
 public enum DoorInteractResult
 {
-    None, Opening, Closing
+    None, Opening, Closing, LockedInteraction
 }
 
 public class Player : MonoBehaviour
@@ -109,6 +109,10 @@ public class Player : MonoBehaviour
         else if (result == DoorInteractResult.Closing)
         {
             audioManager.PlaySequence(candidateUseObject, AudioSequence.DoorClose);
+        }
+        else if (result == DoorInteractResult.LockedInteraction)
+        {
+            audioManager.PlayClip(AudioClipRef.DoorInteract, candidateUseObject);
         }
     }
 

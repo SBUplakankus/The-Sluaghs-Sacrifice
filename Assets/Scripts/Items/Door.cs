@@ -86,7 +86,7 @@ public class Door : MonoBehaviour
         {
             if (!p.inventory.KeyOwned[(int)lockedByKey])
             {
-                return DoorInteractResult.None;
+                return DoorInteractResult.LockedInteraction;
             }
         }
         ToggleOpen(p.transform.position);
