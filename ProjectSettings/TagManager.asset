@@ -10,6 +10,7 @@ TagManager:
   - key4
   - anykey
   - door
+  - HeadBone
   layers:
   - Default
   - TransparentFX
