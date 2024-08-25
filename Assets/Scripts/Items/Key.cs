@@ -102,7 +102,7 @@ public class Key : MonoBehaviour
     
     public KeyType type = KeyType.Brass;
     private GameObject activeKey;
-    private Light light;
+    private new Light light;
     private bool bLightShouldBeActive;
 
 }
