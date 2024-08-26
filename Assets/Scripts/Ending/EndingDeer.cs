@@ -13,6 +13,11 @@ namespace Ending
         public Transform deerStart;
         public Transform deerEnd;
 
+        private void Start()
+        {
+            deer.SetActive(false);
+        }
+
         private void OnEnable()
         {
             AlterTrigger.OnEndingTrigger += HandleEndingSequence;
@@ -31,6 +36,7 @@ namespace Ending
         private IEnumerator DeerMovement()
         {
             yield return new WaitForSeconds(10f);
+            deer.SetActive(true);
             deerAgent.enabled = false;
             deer.transform.position = deerStart.position;
             deer.transform.rotation = Quaternion.Euler(0, 96, 0);
