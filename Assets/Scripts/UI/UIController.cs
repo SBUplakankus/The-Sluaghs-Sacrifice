@@ -14,7 +14,7 @@ namespace UI
         [SerializeField] private GameObject flashInfo;
         [SerializeField] private GameObject inventoryPanel;
         [SerializeField] private GameObject notePickUp;
-
+        
         [Header("UI Checks")] 
         private bool _inventoryOpen;
         private bool _noteOpen;
