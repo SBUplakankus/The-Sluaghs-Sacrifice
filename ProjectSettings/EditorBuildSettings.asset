@@ -5,9 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: "Assets/Scenes/Prototypes/Se\xE1n/Setup.unity"
-    guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: "Assets/Scenes/Prototypes/Se\xE1n/Warning.unity"
+    guid: 5d86d4e4d9253e24d9d6b11cafe4aea9
+  - enabled: 1
+    path: "Assets/Scenes/Prototypes/Se\xE1n/Start Menu.unity"
+    guid: 979b2cbf9257cb94db5e4e25cc83f7da
+  - enabled: 1
+    path: "Assets/Scenes/Prototypes/Se\xE1n/Intro House.unity"
+    guid: 311a21abd7c796d46beebfde6bd9e8e0
   - enabled: 1
     path: "Assets/Scenes/Prototypes/Se\xE1n/Catacomb.unity"
     guid: 9003e2cef2896304e80a93ad7358e50c
