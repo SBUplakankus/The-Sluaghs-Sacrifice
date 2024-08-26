@@ -31,13 +31,13 @@ namespace Triggers
                 TurnOffLight();
         }
 
-        private void TurnOnLight()
+        public void TurnOnLight()
         {
             torchFlame.SetActive(true);
             StartCoroutine(FadeInLight());
         }
 
-        private void TurnOffLight()
+        public void TurnOffLight()
         {
             torchFlame.SetActive(false);
             torchLight.intensity = 0f;
