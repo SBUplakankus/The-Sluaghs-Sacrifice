@@ -3,12 +3,11 @@ using UnityEngine;
 
 public enum KeyType
 {
-    Brass, Iron, Silver, Steel, None
+    Brass, Iron, Silver, Steel, Skull1, Skull2, Skull3, None
 }
 
 public class Key : MonoBehaviour
 {
-
     // Start is called before the first frame update
     void Start()
     {
