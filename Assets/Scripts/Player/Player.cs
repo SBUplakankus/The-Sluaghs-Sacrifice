@@ -82,6 +82,7 @@ public class Player : MonoBehaviour
         pickingUpItem = candidateUseObject;
         originalPickupDistance = (TargetPickupHoverLocation() - pickingUpItem.transform.position).magnitude;
         bPickingUpItem = true;
+        candidateUseObject.GetComponent<Collider>().enabled = false;
         switch (gameManager.stage)
         {
         case GameStage.Stage1:
