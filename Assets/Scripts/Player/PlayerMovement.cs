@@ -261,7 +261,7 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateStairMovement(Vector3 moveInput)
     {
-        const float COS_PI_OVER_6 = 0.866f;
+        const float MIN_HIT_NORM_DP = 0.79f;
         const float MIN_SPEED = 1.5f;
 
         player.bSteppin = false;
@@ -303,7 +303,7 @@ public class PlayerMovement : MonoBehaviour
         float yDist = hit1.point.y - playerBottomY;
         float hitDP = Vector3.Dot(hit1.normal, Vector3.up);
         
-        if (bHitSomething && hitDP >= COS_PI_OVER_6 && yDist <= player.stepHeight
+        if (bHitSomething && hitDP >= MIN_HIT_NORM_DP && yDist <= player.stepHeight
         ) {
             if (player.bDebugDraw)
             {
@@ -326,7 +326,7 @@ public class PlayerMovement : MonoBehaviour
                 
                 yDist = hit.point.y - prevHit.point.y;
 
-                if (bHitSomething && Vector3.Dot(hit1.normal, Vector3.up) >= COS_PI_OVER_6 && yDist <= player.stepHeight)
+                if (bHitSomething && Vector3.Dot(hit1.normal, Vector3.up) >= MIN_HIT_NORM_DP && yDist <= player.stepHeight)
                 {
                     if (player.bDebugDraw)
                     {
@@ -363,6 +363,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (player.bDebugDraw)
         {
+            Debug.Log("hit something: " + bHitSomething + ", hit DP: " + hitDP + ", ydist: " + yDist + ", step height: " + player.stepHeight);
             Debug.DrawLine(stairCheckBegin, stairCheckBegin + Vector3.down * 1.0f, Color.red);
         }
     }
