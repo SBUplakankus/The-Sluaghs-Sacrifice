@@ -18,7 +18,7 @@ namespace Triggers
         private void Update()
         {
             if (_inRange && Input.GetKeyDown(KeyCode.E))
-                SceneManager.LoadScene(2);
+                SceneManager.LoadScene(3);
         }
 
         private void OnTriggerEnter(Collider other)
