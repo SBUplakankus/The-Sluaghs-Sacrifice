@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 enum FlashlightState
 {
@@ -9,6 +10,14 @@ enum FlashlightState
     InUseScanner,
     Stowed,
     Charging
+}
+
+public enum FlickerState
+{
+    None,
+    Infrequent,
+    Frequent,
+    DEBUG 
 }
 
 public class PlayerFlashlight : MonoBehaviour
@@ -40,21 +49,55 @@ public class PlayerFlashlight : MonoBehaviour
                 UpdateState_Stowed();
                 break;
         }
+        UpdateFlicker();
     }
 
-    void UpdateState_InUseCenterView()
+    void UpdateFlicker()
     {
-        const float FLASHLIGHT_SPEED_MULTIPLIER = 11.0f;
-        const float HIT_NEAR_DIST = 10.0f;
+        if (flickerState == FlickerState.None)
+        {
+            return;
+        }
+        
+        if (flickerTimer > 0.0f)
+        {
+            float flickerRate = Random.Range(18.0f, 22.0f);
+            float flickerNorm = Mathf.Clamp(Mathf.Sin(flickerTimer * flickerRate) * 0.5f + 0.5f, 0.1f, 0.3f);
+            float flickerAmplitude = flickerNorm * flickerMaxAmplitude;
+            flickerTimer -= Time.deltaTime;
+            light.intensity = flickerAmplitude;
+        }
+        else if (nextFlickerTime <= 0.0f)
+        {
+            if (flickerState == FlickerState.DEBUG)
+            {
+                nextFlickerTime = Random.Range(1.0f, 2.0f);
+            }
+            else if (flickerState == FlickerState.Frequent)
+            {
+                nextFlickerTime = Random.Range(5.0f, 28.0f);
+            }
+            else
+            {
+                nextFlickerTime = Random.Range(20.0f, 80.0f);
+            }
+        }
+        else
+        {
+            nextFlickerTime -= Time.deltaTime;
+            if (nextFlickerTime <= 0.0f)
+            {
+                flickerMaxAmplitude = light.intensity * 0.1f;
+                flickerTimer = Random.Range(2.0f, 4.8f);
+            }
+        }
+    }
 
+    Vector3 GetCenterViewTarget()
+    {
+        const float HIT_NEAR_DIST = 10.0f;
         Vector3 pos = player.bodyCamera.transform.position;
         Vector3 forward = player.bodyCamera.transform.forward;
-        Vector3 forward2d = new Vector3(forward.x, 0.0f, forward.z);
-        
-        positionTarget = player.transform.position
-          + forward2d * HoldOffset.z
-          + player.bodyCamera.transform.right * HoldOffset.x;
-        
         int layerMask = int.MaxValue;
         bool bHitSomething = Physics.Raycast(
             pos, 
@@ -95,7 +138,6 @@ public class PlayerFlashlight : MonoBehaviour
             }
         }
         
-        targetIntensity = player.bForceVeryLowFlashlightIntensity ? 3.0f : farIntensity;
         Vector3 viewTarget = player.bodyCamera.transform.forward;
         
         // if a raycast from the camera hit something, focus the light on it. if the thing is close, move
@@ -124,6 +166,23 @@ public class PlayerFlashlight : MonoBehaviour
                 }
             }
         }
+
+        return viewTarget;
+    }
+
+    void UpdateState_InUseCenterView()
+    {
+        const float FLASHLIGHT_SPEED_MULTIPLIER = 11.0f;
+
+        Vector3 forward = player.bodyCamera.transform.forward;
+        Vector3 forward2d = new Vector3(forward.x, 0.0f, forward.z);
+        
+        positionTarget = player.transform.position
+          + forward2d * HoldOffset.z
+          + player.bodyCamera.transform.right * HoldOffset.x;
+        
+        targetIntensity = player.bForceVeryLowFlashlightIntensity ? 3.0f : farIntensity;
+        Vector3 viewTarget = GetCenterViewTarget();
         
         Vector3 towardViewDelta = viewTarget - transform.forward;
         float flashlightSpeed;
@@ -169,11 +228,14 @@ public class PlayerFlashlight : MonoBehaviour
     public float farIntensity = 250.0f;
     public float nearIntensity = 130.0f;
 
+    private float nextFlickerTime;
+    private float flickerTimer;
+    private float flickerMaxAmplitude;
     private float targetIntensity;
     private new Light light;
     private Vector3 positionTarget;
     private Player player;
     private GameManager gameManager;
     private FlashlightState state = FlashlightState.InUseCenterView;
-    // private bool bTransitioningToState = false;
+    public FlickerState flickerState = FlickerState.None;
 }
