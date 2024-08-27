@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Versioning;
 using UnityEngine;
 
 public enum KeyType
@@ -15,6 +16,9 @@ public class Key : MonoBehaviour
         GameObject ironKey = null;
         GameObject silverKey = null;
         GameObject steelKey = null;
+        GameObject skull1 = null;
+        GameObject skull2 = null;
+        GameObject skull3 = null;
         Transform[] transforms = GetComponentsInChildren<Transform>();
         foreach (Transform tform in transforms)
         {
@@ -38,6 +42,21 @@ public class Key : MonoBehaviour
                 steelKey = tform.gameObject;
                 tform.gameObject.SetActive(false);
             }
+            else if (tform.gameObject.name == "skullmesh1")
+            {
+                skull1 = tform.gameObject;
+                tform.gameObject.SetActive(false);
+            }
+            else if (tform.gameObject.name == "skullmesh2")
+            {
+                skull2 = tform.gameObject;
+                tform.gameObject.SetActive(false);
+            }
+            else if (tform.gameObject.name == "skullmesh3")
+            {
+                skull3 = tform.gameObject;
+                tform.gameObject.SetActive(false);
+            }
             else if (tform.gameObject.name == "SpotLight")
             {
                 light = tform.gameObject.GetComponent<Light>();
@@ -58,6 +77,15 @@ public class Key : MonoBehaviour
                 break;
             case KeyType.Steel:
                 activeKey = steelKey;
+                break;
+            case KeyType.Skull1:
+                activeKey = skull1;
+                break;
+            case KeyType.Skull2:
+                activeKey = skull2;
+                break;
+            case KeyType.Skull3:
+                activeKey = skull3;
                 break;
         }
         activeKey.SetActive(true);

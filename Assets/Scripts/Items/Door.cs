@@ -1,6 +1,7 @@
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Mathf = UnityEngine.Mathf;
 
 struct DoorRef
@@ -23,6 +24,7 @@ public class Door : MonoBehaviour
 {
     void Start()
     {
+        
         _ui = UIController.Instance;
         
         soundSource = gameObject.AddComponent<AudioSource>();
@@ -68,7 +70,20 @@ public class Door : MonoBehaviour
             rotationLimits[i * 3 + 1] = NormalizeAxis(i == 0 ? refYaw + targetOpenYaw : refYaw - targetOpenYaw);
             rotationLimits[i * 3 + 2] = NormalizeAxis(i == 0 ? refYaw - targetOpenYaw : refYaw + targetOpenYaw);
         }
-
+        if (showOnOpen.Length > 0)
+        {
+            foreach (var o in showOnOpen)
+            {
+                o.GetComponentInChildren<MeshRenderer>().enabled = false;
+            }
+        }
+        if (turnOnLightOnOpen.Length > 0)
+        {
+             for (int i = 0; i < turnOnLightOnOpen.Length; ++i)
+             {
+                 showOnOpen[i].GetComponentInChildren<Light>().enabled = false;
+             }           
+        }
         bShouldTick = false;
     }
 
@@ -212,6 +227,20 @@ public class Door : MonoBehaviour
 
     void OpenAwayFrom(Vector3 point)
     {
+        if (showOnOpen.Length > 0)
+        {
+            foreach (var o in showOnOpen)
+            {
+                o.GetComponentInChildren<MeshRenderer>().enabled = true;
+            }
+        }
+        if (turnOnLightOnOpen.Length > 0)
+        {
+             for (int i = 0; i < turnOnLightOnOpen.Length; ++i)
+             {
+                 showOnOpen[i].GetComponentInChildren<Light>().enabled = true;
+             }           
+        }
         Vector3 toPointScaled = point - transform.position;
         Vector3 forwardDir = transform.forward;
         float scaledCosTheta = Vector3.Dot(toPointScaled, forwardDir);
@@ -398,7 +427,9 @@ public class Door : MonoBehaviour
     public float timeToRotate = 2.0f;
     public KeyType[] lockedByKeys;
     public float liftBeginY;
-
+    [FormerlySerializedAs("enableOnOpen")] public GameObject[] showOnOpen;
+    public GameObject[] turnOnLightOnOpen;
+    
     private UIController _ui;
     private DoorRef[] doors;
     private float[] rotationLimits;

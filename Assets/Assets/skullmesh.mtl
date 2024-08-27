@@ -1,0 +1,12 @@
+# Blender 4.2.1 LTS MTL File: 'scull lp.blend'
+# www.blender.org
+
+newmtl Material
+Ns 403.271332
+Ka 0.211679 0.211679 0.211679
+Kd 0.412124 0.396621 0.293984
+Ks 0.306569 0.306569 0.306569
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 3

@@ -7,6 +7,7 @@ public class FlashlightToggle : MonoBehaviour
 {
     private Light _light;
     private bool _flashOn;
+    public bool bDisabled;
 
     private void Start()
     {
@@ -28,7 +29,7 @@ public class FlashlightToggle : MonoBehaviour
             _light.enabled = false;
             _flashOn = false;
         }
-        else
+        else if (!bDisabled)
         {
             _light.enabled = true;
             _flashOn = true;
