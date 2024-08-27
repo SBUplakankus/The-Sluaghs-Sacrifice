@@ -123,6 +123,10 @@ public class Door : MonoBehaviour
     public DoorInteractResult TryToggleOpen(Player p)
     {
         interactionCount += 1;
+        if (!bCanBeToggled)
+        {
+            return DoorInteractResult.LockedInteraction;
+        }
         if (lockedByKeys.Length > 0)
         {
             foreach (var k in lockedByKeys)
@@ -154,7 +158,7 @@ public class Door : MonoBehaviour
 
     public void ToggleOpen(Vector3 fromPoint)
     {
-        liftBeginY = transform.position.y;
+        liftBeginY = doors[0].door.transform.position.y;
         if (state == DoorState.Open)
         {
             Close();
@@ -189,7 +193,17 @@ public class Door : MonoBehaviour
         bPauseRotate = !bPauseRotate;
     }
 
-    void Close()
+    public void TryClosePermanently()
+    {
+        if (state != DoorState.Open)
+        {
+            return;
+        }
+        ToggleOpen(Vector3.one);
+        bCanBeToggled = false;
+    }
+
+    public void Close()
     {
         state = DoorState.Closing;
         bOpenAfterClose = false;
@@ -241,7 +255,14 @@ public class Door : MonoBehaviour
             }
 
             float targetYaw = bPositiveMotion ? rotationLimits[i * 3 + 1] : rotationLimits[i * 3 + 2];
-            bFinishedRotation[i] = RotateDoor(doors[i].door, startRotationYaw[i], targetYaw);
+            if (type == DoorType.Lift)
+            {
+                bFinishedRotation[i] = RotateDoor(doors[i].door, liftBeginY, liftBeginY + liftAmount);
+            }
+            else
+            {
+                bFinishedRotation[i] = RotateDoor(doors[i].door, startRotationYaw[i], targetYaw);
+            }
         }
 
         if (bFinishedRotation[0] && bFinishedRotation[1])
@@ -262,7 +283,15 @@ public class Door : MonoBehaviour
                 bFinishedRotation[i] = true;
                 continue;
             }
-            bFinishedRotation[i] = RotateDoor(doors[i].door, startRotationYaw[i],rotationLimits[i * 3]);
+
+            if (type == DoorType.Lift)
+            {
+                bFinishedRotation[i] = RotateDoor(doors[i].door, liftBeginY,liftBeginY - liftAmount);
+            }
+            else
+            {
+                bFinishedRotation[i] = RotateDoor(doors[i].door, startRotationYaw[i],rotationLimits[i * 3]);
+            }
         }
 
         if (bFinishedRotation[0] && bFinishedRotation[1])
@@ -292,7 +321,6 @@ public class Door : MonoBehaviour
     bool RotateDoor(GameObject door, float startYaw, float targetYaw)
     {
         float normVal = SigmoidOnRange(rotationTimer, 0.0f, timeToRotate);
-        float liftSign = state == DoorState.Closing ? -1.0f : 1.0f;
         bool bNearEnough = normVal >= 0.999f;
         if (bNearEnough)
         {
@@ -304,7 +332,7 @@ public class Door : MonoBehaviour
             {
                 // hackery because apparently doors lift
                 Vector3 curPos = door.transform.position;
-                curPos.y = liftBeginY + liftSign * liftAmount * normVal;
+                curPos.y = startYaw + (targetYaw - startYaw) * normVal;
                 door.transform.position = curPos;
 
             }
@@ -320,7 +348,7 @@ public class Door : MonoBehaviour
         {
             // hackery because apparently doors lift
             Vector3 curPos = door.transform.position;
-            curPos.y = liftBeginY + liftSign * liftAmount * normVal;
+            curPos.y = startYaw + (targetYaw - startYaw) * normVal;
             door.transform.position = curPos;
         }
         return false;
@@ -384,5 +412,6 @@ public class Door : MonoBehaviour
     private int interactionCount;
     private bool bUpdatedLockedInteractDisplay;
     private float hackySceneChangeTimer;
+    public bool bCanBeToggled = true;
 
 }
