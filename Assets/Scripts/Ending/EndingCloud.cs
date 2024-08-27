@@ -34,10 +34,10 @@ namespace Ending
 
         private IEnumerator DeerMovement()
         {
-            yield return new WaitForSeconds(17f);
+            yield return new WaitForSeconds(21f);
             cloud.SetActive(true);
             Tween.Position(cloud.transform, cloudStart.position, 6f);
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(6f);
             foreach (var e in eyes)
             {
                 e.SetActive(true);
