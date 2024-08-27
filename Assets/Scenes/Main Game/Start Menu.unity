@@ -3827,6 +3827,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creditsPanel: {fileID: 1746337966}
   fadeImage: {fileID: 765618175}
+  fadeDuration: 2
 --- !u!1001 &1715666432
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46346,6 +46347,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1251764147915305504, guid: 94d414febaa04d648856fbc4639b569c,
+        type: 3}
+      propertyPath: sharedProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: f7904b781c59fb24c96e14ecf80e0e23,
+        type: 2}
     - target: {fileID: 4752588087607223005, guid: 94d414febaa04d648856fbc4639b569c,
         type: 3}
       propertyPath: m_Name
