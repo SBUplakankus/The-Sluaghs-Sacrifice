@@ -117,6 +117,42 @@ public class Player : MonoBehaviour
         }
     }
 
+    void SetNewInteractObject(RaycastHit hit)
+    {
+        candidateUseObject = hit.transform.gameObject;
+        bCandidateUseObjectExists = true;
+        bForceVeryLowFlashlightIntensity = true;
+        // hovering a key
+        if (candidateUseObject.CompareTag("anykey"))
+        {
+            candidateUseObject.GetComponent<Key>().SetLightActive(true);
+        }
+        // hovering a door
+        else if (candidateUseObject.CompareTag("door"))
+        {
+            candidateUseObject.GetComponentInParent<Door>().ShowInteractUI();
+        }
+    }
+
+    void VoidCurrentInteractObject()
+    {
+        if (bCandidateUseObjectExists)
+        {
+            // undoing key hover
+            if (candidateUseObject.CompareTag("anykey"))
+            {
+                candidateUseObject.GetComponent<Key>().SetLightActive(false);
+            }
+            // undoing door hover
+            else if (candidateUseObject.CompareTag("door"))
+            {
+                candidateUseObject.GetComponentInParent<Door>().HideInteractUI();
+            }
+            candidateUseObject = null;
+            bCandidateUseObjectExists = false;
+        }
+    }
+
     // ReSharper disable Unity.PerformanceAnalysis
     void UpdateCandidatePickupItem()
     {
@@ -126,40 +162,36 @@ public class Player : MonoBehaviour
         }
         bForceVeryLowFlashlightIntensity = false;
 
+        int items = (1 << LayerMask.NameToLayer("Items"));
+        int doors = (1 << LayerMask.NameToLayer("Doors"));
+        int layerFilter = items | doors;
+
         bool bDidHit = Physics.Raycast(
             bodyCamera.transform.position,
             bodyCamera.transform.forward,
             out RaycastHit hit,
             ItemGrabDistance,
-            (1 << LayerMask.NameToLayer("Items")) | (1 << LayerMask.NameToLayer("Doors"))
+            layerFilter
         );
 
         if (bDidHit)
         {
-            candidateUseObject = hit.transform.gameObject;
-            bCandidateUseObjectExists = true;
-            bForceVeryLowFlashlightIntensity = true;
-            if (candidateUseObject.CompareTag("anykey"))
+            if (bCandidateUseObjectExists)
             {
-                candidateUseObject.GetComponent<Key>().SetLightActive(true);
+                if (candidateUseObject != hit.transform.gameObject)
+                {
+                    VoidCurrentInteractObject();
+                    SetNewInteractObject(hit);
+                }
             }
-            else if (candidateUseObject.CompareTag("door"))
+            else
             {
-                candidateUseObject.GetComponentInParent<Door>().ShowInteractUI();
+                SetNewInteractObject(hit);
             }
         }
-        else if (bCandidateUseObjectExists)
+        else
         {
-            if (candidateUseObject.CompareTag("anykey"))
-            {
-                candidateUseObject.GetComponent<Key>().SetLightActive(false);
-            }
-            else if (candidateUseObject.CompareTag("door"))
-            {
-                candidateUseObject.GetComponentInParent<Door>().HideInteractUI();
-            }
-            candidateUseObject = null;
-            bCandidateUseObjectExists = false;
+            VoidCurrentInteractObject();
         }
 
         if (bDebugDraw && bCandidateUseObjectExists)
@@ -464,7 +496,7 @@ public class Player : MonoBehaviour
     private bool bPickingUpItem;
     private bool bCandidateUseObjectExists;
     private GameObject candidateUseObject;
-    private GameObject pickingUpItem;
+    public GameObject pickingUpItem;
     private float originalPickupDistance;
     private float pickupTime;
     public bool bSteppin;
