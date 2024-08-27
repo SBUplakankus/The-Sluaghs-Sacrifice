@@ -363,7 +363,6 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (player.bDebugDraw)
         {
-            Debug.Log("hit something: " + bHitSomething + ", hit DP: " + hitDP + ", ydist: " + yDist + ", step height: " + player.stepHeight);
             Debug.DrawLine(stairCheckBegin, stairCheckBegin + Vector3.down * 1.0f, Color.red);
         }
     }
