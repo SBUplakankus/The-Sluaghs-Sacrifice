@@ -42,9 +42,9 @@ PlayerSettings:
   m_SplashScreenLogos: []
   m_VirtualRealitySplashScreen: {fileID: 0}
   m_HolographicTrackingLossScreen: {fileID: 0}
-  defaultScreenWidth: 640
+  defaultScreenWidth: 854
   defaultScreenHeight: 480
-  defaultScreenWidthWeb: 640
+  defaultScreenWidthWeb: 854
   defaultScreenHeightWeb: 480
   m_StereoRenderingPath: 0
   m_ActiveColorSpace: 1
@@ -806,7 +806,8 @@ PlayerSettings:
   webGLMemoryGeometricGrowthStep: 0.2
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Server: 
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
