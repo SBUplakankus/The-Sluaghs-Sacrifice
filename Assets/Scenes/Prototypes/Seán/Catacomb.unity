@@ -2131,17 +2131,17 @@ PrefabInstance:
     - target: {fileID: 5862103463123124711, guid: 494341742969cff4aa9c850c809383f4,
         type: 3}
       propertyPath: lockedByKeys.Array.data[0]
-      value: 7
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5862103463123124711, guid: 494341742969cff4aa9c850c809383f4,
         type: 3}
       propertyPath: lockedByKeys.Array.data[1]
-      value: 7
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5862103463123124711, guid: 494341742969cff4aa9c850c809383f4,
         type: 3}
       propertyPath: lockedByKeys.Array.data[2]
-      value: 7
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6311673523287557824, guid: 494341742969cff4aa9c850c809383f4,
         type: 3}
