@@ -17,6 +17,7 @@ namespace Ending
         public Player playerScript;
         public PlayerController playerControlScript;
         public PlayerMovement playerMovementScript;
+        public Rigidbody rb;
         
         
         private void OnEnable()
@@ -42,6 +43,7 @@ namespace Ending
             DisablePlayer();
             playerCamera.transform.rotation = Quaternion.Euler(5, 90, 0);
             gamePlayer.transform.position = endPosition.transform.position;
+            rb.constraints = RigidbodyConstraints.FreezePosition;
             
             yield return new WaitForSeconds(2f);
             Tween.ShakeCamera(playerCamera, 1f, 1.3f);
