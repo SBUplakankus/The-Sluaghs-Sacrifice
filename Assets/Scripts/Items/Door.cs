@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UI;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Mathf = UnityEngine.Mathf;
@@ -15,6 +12,11 @@ struct DoorRef
 public enum DoorState
 {
     Closed, Opening, Open, Closing
+}
+
+public enum DoorType
+{
+    Swing, Lift
 }
 
 public class Door : MonoBehaviour
@@ -121,11 +123,18 @@ public class Door : MonoBehaviour
     public DoorInteractResult TryToggleOpen(Player p)
     {
         interactionCount += 1;
-        if (lockedByKey != KeyType.None)
+        if (lockedByKeys.Length > 0)
         {
-            if (!p.inventory.KeyOwned[(int)lockedByKey])
+            foreach (var k in lockedByKeys)
             {
-                return DoorInteractResult.LockedInteraction;
+                if (k == KeyType.None)
+                {
+                    continue;
+                }
+                if (!p.inventory.KeyOwned[(int)k])
+                {
+                    return DoorInteractResult.LockedInteraction;
+                }
             }
         }
         if (bMoves)
@@ -145,6 +154,7 @@ public class Door : MonoBehaviour
 
     public void ToggleOpen(Vector3 fromPoint)
     {
+        liftBeginY = transform.position.y;
         if (state == DoorState.Open)
         {
             Close();
@@ -209,8 +219,10 @@ public class Door : MonoBehaviour
         else if (bWasPositiveMotion != bPositiveMotion)
         {
             state = DoorState.Closing;
-            bOpenAfterClose = true;
-
+            if (type == DoorType.Swing)
+            {
+                bOpenAfterClose = true;
+            }
         }
 
         bShouldTick = true;
@@ -280,15 +292,37 @@ public class Door : MonoBehaviour
     bool RotateDoor(GameObject door, float startYaw, float targetYaw)
     {
         float normVal = SigmoidOnRange(rotationTimer, 0.0f, timeToRotate);
+        float liftSign = state == DoorState.Closing ? -1.0f : 1.0f;
         bool bNearEnough = normVal >= 0.999f;
         if (bNearEnough)
         {
-            door.transform.localRotation = Quaternion.AngleAxis(targetYaw, Vector3.up);
+            if (type == DoorType.Swing)
+            {
+                door.transform.localRotation = Quaternion.AngleAxis(targetYaw, Vector3.up);
+            }
+            else
+            {
+                // hackery because apparently doors lift
+                Vector3 curPos = door.transform.position;
+                curPos.y = liftBeginY + liftSign * liftAmount * normVal;
+                door.transform.position = curPos;
+
+            }
             return true;
         }
         float epsilon = NormalizeAxis(targetYaw - startYaw);
         float newAxisVal = NormalizeAxis(startYaw + normVal * epsilon);
-        door.transform.localRotation = Quaternion.AngleAxis(newAxisVal, Vector3.up);
+        if (type == DoorType.Swing)
+        {
+            door.transform.localRotation = Quaternion.AngleAxis(newAxisVal, Vector3.up);
+        }
+        else
+        {
+            // hackery because apparently doors lift
+            Vector3 curPos = door.transform.position;
+            curPos.y = liftBeginY + liftSign * liftAmount * normVal;
+            door.transform.position = curPos;
+        }
         return false;
     }
 
@@ -328,11 +362,14 @@ public class Door : MonoBehaviour
     public AudioClip openClip;
     public AudioClip closeClip;
     public AudioClip fullyClosedClip;
-    
+
+    public DoorType type = DoorType.Lift;
+    public float liftAmount = 3.0f;
     public DoorState state;
     public float targetOpenYaw = 90.0f;
     public float timeToRotate = 2.0f;
-    public KeyType lockedByKey = KeyType.None;
+    public KeyType[] lockedByKeys;
+    public float liftBeginY;
 
     private UIController _ui;
     private DoorRef[] doors;
