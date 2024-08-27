@@ -144,7 +144,7 @@ public class Player : MonoBehaviour
             }
             else if (candidateUseObject.CompareTag("door"))
             {
-                // ...
+                candidateUseObject.GetComponentInParent<Door>().ShowInteractUI();
             }
         }
         else if (bCandidateUseObjectExists)
@@ -152,6 +152,10 @@ public class Player : MonoBehaviour
             if (candidateUseObject.CompareTag("anykey"))
             {
                 candidateUseObject.GetComponent<Key>().SetLightActive(false);
+            }
+            else if (candidateUseObject.CompareTag("door"))
+            {
+                candidateUseObject.GetComponentInParent<Door>().HideInteractUI();
             }
             candidateUseObject = null;
             bCandidateUseObjectExists = false;

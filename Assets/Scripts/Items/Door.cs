@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using UI;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Mathf = UnityEngine.Mathf;
 
 struct DoorRef
@@ -19,6 +21,8 @@ public class Door : MonoBehaviour
 {
     void Start()
     {
+        _ui = UIController.Instance;
+        
         soundSource = gameObject.AddComponent<AudioSource>();
         soundSource.spatialize = true;
         soundSource.spatialBlend = 1.0f;
@@ -66,8 +70,42 @@ public class Door : MonoBehaviour
         bShouldTick = false;
     }
 
+    public void ShowInteractUI()
+    {
+        if (!bShowingUI || (interactionCount > 2 && !bUpdatedLockedInteractDisplay))
+        {
+            if (interactionCount > 2)
+            {
+                bUpdatedLockedInteractDisplay = true;
+                _ui.ShowInteract("Enter (locked)");
+            }
+            else
+            {
+                _ui.ShowInteract("Enter");
+            }
+            bShowingUI = true;
+        }
+    }
+
+    public void HideInteractUI()
+    {
+        if (bShowingUI)
+        {
+            _ui.HideInteract();
+            bShowingUI = false;
+        }
+    }
+
     void Update()
     {
+        if (hackySceneChangeTimer > 0.0f)
+        {
+            hackySceneChangeTimer += Time.deltaTime;
+            if (hackySceneChangeTimer > 1.0f)
+            {
+                SceneManager.LoadScene(loadSceneNumber);
+            }
+        }
         if (!bShouldTick || bPauseRotate) return;
         switch (state)
         {
@@ -82,6 +120,7 @@ public class Door : MonoBehaviour
 
     public DoorInteractResult TryToggleOpen(Player p)
     {
+        interactionCount += 1;
         if (lockedByKey != KeyType.None)
         {
             if (!p.inventory.KeyOwned[(int)lockedByKey])
@@ -89,8 +128,19 @@ public class Door : MonoBehaviour
                 return DoorInteractResult.LockedInteraction;
             }
         }
-        ToggleOpen(p.transform.position);
-        return state == DoorState.Closing ? DoorInteractResult.Closing : DoorInteractResult.Opening;
+        if (bMoves)
+        {
+            ToggleOpen(p.transform.position);
+            return state == DoorState.Closing ? DoorInteractResult.Closing : DoorInteractResult.Opening;
+        }
+        else
+        {
+            if (hackySceneChangeTimer == 0.0f)
+            {
+                hackySceneChangeTimer = 0.01f;
+            }
+        }
+        return DoorInteractResult.Opening;
     }
 
     public void ToggleOpen(Vector3 fromPoint)
@@ -270,6 +320,9 @@ public class Door : MonoBehaviour
         return angle;
     }
 
+    public bool bMoves = false;
+    public int loadSceneNumber = 3;
+    
     public AudioSource soundSource;
     public AudioClip interactClip;
     public AudioClip openClip;
@@ -281,6 +334,7 @@ public class Door : MonoBehaviour
     public float timeToRotate = 2.0f;
     public KeyType lockedByKey = KeyType.None;
 
+    private UIController _ui;
     private DoorRef[] doors;
     private float[] rotationLimits;
     private float[] startRotationYaw;
@@ -289,5 +343,9 @@ public class Door : MonoBehaviour
     private bool bOpenAfterClose;
     private bool bPauseRotate;
     private bool bShouldTick;
-    
+    private bool bShowingUI;
+    private int interactionCount;
+    private bool bUpdatedLockedInteractDisplay;
+    private float hackySceneChangeTimer;
+
 }
