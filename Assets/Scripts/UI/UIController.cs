@@ -10,14 +10,18 @@ namespace UI
         
         [Header("UI Elements")]
         [SerializeField] private GameObject interactPopUp;
-        [SerializeField] private GameObject pauseMenu;
         [SerializeField] private GameObject flashInfo;
         [SerializeField] private GameObject inventoryPanel;
         [SerializeField] private GameObject notePickUp;
+
+        [Header("Pause")] 
+        [SerializeField] private GameObject pauseIcon;
+        [SerializeField] private GameObject playIcon;
         
         [Header("UI Checks")] 
         private bool _inventoryOpen;
         private bool _noteOpen;
+        private bool _paused;
 
         [Header("UI Scripts")] 
         private NoteDisplay _noteDisplay;
@@ -42,6 +46,7 @@ namespace UI
             HidePauseMenu();
             inventoryPanel.SetActive(false);
             _inventoryOpen = false;
+            _paused = false;
             HideNote();
         }
 
@@ -54,23 +59,40 @@ namespace UI
                 else
                     ShowInventory();
             }
+
+            if (Input.GetKeyDown(KeyCode.Q))
+                HandePauseMenu();
                 
         }
 
+        private void HandePauseMenu()
+        {
+            if (_paused)
+                ShowPauseMenu();
+            else
+                HidePauseMenu();
+        }
+        
         /// <summary>
         /// Show the Pause Menu
         /// </summary>
-        public void ShowPauseMenu()
+        private void ShowPauseMenu()
         {
-            pauseMenu.SetActive(true);
+            pauseIcon.SetActive(true);
+            playIcon.SetActive(false);
+            Time.timeScale = 0;
+            _paused = false;
         }
         
         /// <summary>
         /// Hide the Pause Menu
         /// </summary>
-        public void HidePauseMenu()
+        private void HidePauseMenu()
         {
-            pauseMenu.SetActive(false);
+            pauseIcon.SetActive(false);
+            playIcon.SetActive(true);
+            Time.timeScale = 1;
+            _paused = true;
         }
         
         /// <summary>
