@@ -909,24 +909,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1715666432}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1017081840 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7758525383270092454, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
-    type: 3}
-  m_PrefabInstance: {fileID: 2060545153}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1017081845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1017081840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e513aabd062a43f428ce8d61d6500ce7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1077486146
 GameObject:
   m_ObjectHideFlags: 0
@@ -2006,21 +1988,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2017600068}
     m_Modifications:
-    - target: {fileID: 862151695858204836, guid: 5e69f02764c1a2744abdc1deef82109e,
-        type: 3}
-      propertyPath: m_TagString
-      value: door
-      objectReference: {fileID: 0}
-    - target: {fileID: 6311673523287557824, guid: 494341742969cff4aa9c850c809383f4,
-        type: 3}
-      propertyPath: m_Name
-      value: BasementDoor 1 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6311673523287557824, guid: 494341742969cff4aa9c850c809383f4,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5420363240954391662, guid: 494341742969cff4aa9c850c809383f4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2075,6 +2042,21 @@ PrefabInstance:
         type: 3}
       propertyPath: lockedByKeys.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6311673523287557824, guid: 494341742969cff4aa9c850c809383f4,
+        type: 3}
+      propertyPath: m_Name
+      value: BasementDoor 1 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6311673523287557824, guid: 494341742969cff4aa9c850c809383f4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 862151695858204836, guid: 5e69f02764c1a2744abdc1deef82109e,
+        type: 3}
+      propertyPath: m_TagString
+      value: door
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -3348,11 +3330,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1092366477517020911, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
-        type: 3}
-      propertyPath: stage
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4449613356859831047, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
         type: 3}
       propertyPath: m_Name
@@ -3408,39 +3385,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6583495617239394437, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
-        type: 3}
-      propertyPath: walkSpeed
-      value: 2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6583495617239394437, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
-        type: 3}
-      propertyPath: _headBobVerticalIntensity
-      value: 0.244
-      objectReference: {fileID: 0}
-    - target: {fileID: 7758525383270092454, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8604680526438477730, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
-        type: 3}
-      propertyPath: m_TargetTexture
-      value: 
-      objectReference: {fileID: 8400000, guid: 7eeb2b4c034643c4c9d501afcb3b7575, type: 2}
-    - target: {fileID: 9050543207773084719, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
-        type: 3}
-      propertyPath: m_TargetTexture
-      value: 
-      objectReference: {fileID: 8400000, guid: 7eeb2b4c034643c4c9d501afcb3b7575, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7758525383270092454, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1017081845}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8ff1f4136bc904d4891e68c6e3de0f88, type: 3}
 --- !u!1 &2082722412
 GameObject:
@@ -14792,6 +14740,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1077486147}
     m_Modifications:
+    - target: {fileID: 7266431909995834938, guid: 862bdabdf9b788c4bb9b7e739c9b78c6,
+        type: 3}
+      propertyPath: m_Volume
+      value: 0.806
+      objectReference: {fileID: 0}
     - target: {fileID: 8591340366212623064, guid: 862bdabdf9b788c4bb9b7e739c9b78c6,
         type: 3}
       propertyPath: m_Name

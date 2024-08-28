@@ -7,11 +7,15 @@ public class FlashlightToggle : MonoBehaviour
 {
     private Light _light;
     private bool _flashOn;
+    private AudioSource _audioSource;
+
+    public AudioClip[] audioClips;
     public bool bDisabled;
 
     private void Start()
     {
         _light = GetComponent<Light>();
+        _audioSource = GetComponent<AudioSource>();
         _flashOn = false;
         _light.enabled = false;
     }
@@ -28,11 +32,13 @@ public class FlashlightToggle : MonoBehaviour
         {
             _light.enabled = false;
             _flashOn = false;
+            _audioSource.PlayOneShot(audioClips[0]);
         }
         else if (!bDisabled)
         {
             _light.enabled = true;
             _flashOn = true;
+            _audioSource.PlayOneShot(audioClips[1]);
         }
     }
 }
