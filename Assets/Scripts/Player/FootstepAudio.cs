@@ -48,7 +48,7 @@ public class FootstepAudio : MonoBehaviour
             _ => _audioSource.clip
         };
 
-        _audioSource.pitch = UnityEngine.Random.Range(0.5f, 0.7f);
+        _audioSource.pitch = UnityEngine.Random.Range(0.4f, 0.5f);
         _audioSource.Play();
     }
 }
