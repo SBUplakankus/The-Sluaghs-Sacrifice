@@ -36,15 +36,17 @@ public class PlayerCheckpoint : MonoBehaviour
         // find overlaps 
         Collider[] hitColliders = new Collider[128];
         int overlapCount = Physics.OverlapBoxNonAlloc(
-            boxCollider.transform.position, scaledSize, hitColliders, transform.rotation
+            boxCollider.transform.position, scaledSize, hitColliders, transform.rotation,
+            1 << LayerMask.NameToLayer("Player")
         );
         
         // for all overlaps, look for player and assign this checkpoint to the player if it's a good idea to do so
         for (int i = 0; i < overlapCount; ++i)
         {
             Collider hitCollider = hitColliders[i];
-            if (hitCollider.gameObject == gameManager.player.gameObject)
+            if (hitCollider.CompareTag("Player"))
             {
+                Debug.Log("overlap player");
                 bool bReplaceCheckpoint = false;
                 if (gameManager.bProgressiveCheckpoints)
                 {
@@ -64,6 +66,7 @@ public class PlayerCheckpoint : MonoBehaviour
 
                 if (bReplaceCheckpoint)
                 {
+                    Debug.Log("set checkpoint");
                     gameManager.player.checkpoint = this;
                     break;
                 }

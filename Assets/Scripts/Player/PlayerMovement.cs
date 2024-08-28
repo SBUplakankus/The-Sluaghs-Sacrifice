@@ -19,6 +19,10 @@ public class PlayerMovement : MonoBehaviour
 
     public void UpdateMoveAndLook(Vector2 moveInput, Vector2 lookInput)
     {
+        if (player.bRespawning)
+        {
+            return;
+        }
         UpdateYaw(lookInput);
         UpdatePitch(lookInput);
         UpdateHeadBob();

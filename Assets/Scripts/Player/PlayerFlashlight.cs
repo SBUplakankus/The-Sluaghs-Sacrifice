@@ -17,6 +17,7 @@ public enum FlickerState
     None,
     Infrequent,
     Frequent,
+    Always,
     DEBUG 
 }
 
@@ -52,6 +53,13 @@ public class PlayerFlashlight : MonoBehaviour
         UpdateFlicker();
     }
 
+    public void TriggerFlicker(float minTime=2.0f, float maxTime=4.8f)
+    {
+        nextFlickerTime = 0.0f;
+        flickerMaxAmplitude = light.intensity * 0.1f;
+        flickerTimer = Random.Range(minTime, maxTime);
+    }
+    
     void UpdateFlicker()
     {
         if (flickerState == FlickerState.None)
@@ -69,13 +77,25 @@ public class PlayerFlashlight : MonoBehaviour
         }
         else if (nextFlickerTime <= 0.0f)
         {
-            if (flickerState == FlickerState.DEBUG)
+            if (bDieAfterFlicker)
+            {
+                flickerState = FlickerState.None;
+                bDieAfterFlicker = false;
+                farIntensity = 0.0f;
+                nearIntensity = 0.0f;
+                bDead = true;
+            }
+            else if (flickerState == FlickerState.DEBUG)
             {
                 nextFlickerTime = Random.Range(1.0f, 2.0f);
             }
             else if (flickerState == FlickerState.Frequent)
             {
                 nextFlickerTime = Random.Range(5.0f, 28.0f);
+            }
+            else if (flickerState == FlickerState.Always)
+            {
+                nextFlickerTime = 0.0f;
             }
             else
             {
@@ -87,8 +107,7 @@ public class PlayerFlashlight : MonoBehaviour
             nextFlickerTime -= Time.deltaTime;
             if (nextFlickerTime <= 0.0f)
             {
-                flickerMaxAmplitude = light.intensity * 0.1f;
-                flickerTimer = Random.Range(2.0f, 4.8f);
+                TriggerFlicker();
             }
         }
     }
@@ -200,6 +219,12 @@ public class PlayerFlashlight : MonoBehaviour
         light.intensity += (targetIntensity - light.intensity) * (6.0f * gameManager.deltaTime);
     }
 
+    public void FlickerAndDie()
+    {
+        TriggerFlicker();
+        bDieAfterFlicker = true;
+    }
+
     void UpdateState_InUseScanner()
     {
         
@@ -238,4 +263,6 @@ public class PlayerFlashlight : MonoBehaviour
     private GameManager gameManager;
     private FlashlightState state = FlashlightState.InUseCenterView;
     public FlickerState flickerState = FlickerState.None;
+    private bool bDieAfterFlicker;
+    public bool bDead;
 }
