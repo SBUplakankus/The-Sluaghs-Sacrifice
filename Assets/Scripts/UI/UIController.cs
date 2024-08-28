@@ -22,19 +22,26 @@ namespace UI
         [Header("UI Scripts")] 
         private NoteDisplay _noteDisplay;
         private InteractPopUp _interactPopUp;
+        private AudioSource _audioSource;
+
+        [Header("UI Sounds")] 
+        public AudioClip notePickup;
+        public AudioClip[] inventoryClips;
         
         private void Awake()
         {
             Instance = this;
             _noteDisplay = GetComponent<NoteDisplay>();
             _interactPopUp = GetComponent<InteractPopUp>();
+            _audioSource = GetComponent<AudioSource>();
         }
 
         private void Start()
         {
             HideInteract();
             HidePauseMenu();
-            HideInventory();
+            inventoryPanel.SetActive(false);
+            _inventoryOpen = false;
             HideNote();
         }
 
@@ -88,6 +95,7 @@ namespace UI
         /// </summary>
         public void ShowInventory()
         {
+            _audioSource.PlayOneShot(inventoryClips[0]);
             inventoryPanel.SetActive(true);
             _inventoryOpen = true;
         }
@@ -97,6 +105,7 @@ namespace UI
         /// </summary>
         public void HideInventory()
         {
+            _audioSource.PlayOneShot(inventoryClips[1]);
             inventoryPanel.SetActive(false);
             _inventoryOpen = false;
         }
@@ -116,6 +125,7 @@ namespace UI
 
         private void ShowNote()
         {
+            _audioSource.PlayOneShot(notePickup);
             notePickUp.SetActive(true);
             _noteOpen = true;
         }

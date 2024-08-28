@@ -20,7 +20,7 @@ public class FootstepAudio : MonoBehaviour
 
     private Rigidbody _controller; 
 
-    private const float StepInterval = 0.75f; // Time between steps
+    private const float StepInterval = 0.65f; // Time between steps
     private float _nextStepTime = 0f; // Timer to track when to play the next step
 
     private void Start()
@@ -48,7 +48,7 @@ public class FootstepAudio : MonoBehaviour
             _ => _audioSource.clip
         };
 
-        _audioSource.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
+        _audioSource.pitch = UnityEngine.Random.Range(0.5f, 0.7f);
         _audioSource.Play();
     }
 }

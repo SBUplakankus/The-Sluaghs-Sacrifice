@@ -310,7 +310,7 @@ MonoBehaviour:
   _flySpeedMultiplier: 4
   _frictionCoef: 0.9
   RunKeyCode: 304
-  ItemGrabDistance: 3.8
+  ItemGrabDistance: 1.83
   stepHeight: 0.4
   bodyCamera: {fileID: 0}
   rigidBody: {fileID: 0}
