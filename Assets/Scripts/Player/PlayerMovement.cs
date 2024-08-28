@@ -252,7 +252,7 @@ public class PlayerMovement : MonoBehaviour
         float TargetOffset = 0.0f;
         float SeekTargetSpeed = 0.02f;
         float moveSpeed = player.rigidBody.velocity.magnitude;
-        if (moveSpeed > 3.0f)
+        if (moveSpeed > 1.0f)
         {
             headBobPeriod *= (1.0f / player.walkSpeed) * PERIOD_MULTIPLIER * frequencyParamValue;
             headBobAmplitude *= (1.0f / player.walkSpeed) * AMPLITUDE_MULTIPLIER * amplitudeParamValue;

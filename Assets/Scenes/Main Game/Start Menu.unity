@@ -4329,9 +4329,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Game Name
+  m_text: 'The Sluaghs
 
-    That is Cool'
+    Sacrifice'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cec7190cdf49b624b8d7571af8539d35, type: 2}
   m_sharedMaterial: {fileID: 6198419951191914284, guid: cec7190cdf49b624b8d7571af8539d35,
@@ -4359,8 +4359,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

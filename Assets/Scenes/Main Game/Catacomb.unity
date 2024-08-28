@@ -1111,6 +1111,11 @@ PrefabInstance:
       propertyPath: bProgressiveCheckpoints
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1859665451527643872, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
+        type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
     - target: {fileID: 1893475623615479337, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
         type: 3}
       propertyPath: m_LocalRotation.w
@@ -1179,7 +1184,7 @@ PrefabInstance:
     - target: {fileID: 4510243995049201499, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -137.922
+      value: -80
       objectReference: {fileID: 0}
     - target: {fileID: 4510243995049201499, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
         type: 3}
@@ -1225,6 +1230,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6583495617239394437, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
+        type: 3}
+      propertyPath: walkSpeed
+      value: 2.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 6583495617239394437, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
+        type: 3}
+      propertyPath: _headBobFrequency
+      value: 0.595
+      objectReference: {fileID: 0}
+    - target: {fileID: 6583495617239394437, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
+        type: 3}
+      propertyPath: _headBobVerticalIntensity
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 7758525383270092454, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
         type: 3}
@@ -4605,6 +4625,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3361407134034978574, guid: c05d26b19cec0a248a520fab27983208,
+        type: 3}
+      propertyPath: m_Speed
+      value: 2.25
       objectReference: {fileID: 0}
     - target: {fileID: 3364919987347545569, guid: c05d26b19cec0a248a520fab27983208,
         type: 3}
@@ -14126,6 +14151,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ------ OUTPUT ------
+      objectReference: {fileID: 0}
+    - target: {fileID: 4935270577736998561, guid: 79d045f1f927fc143b75b35fd82a8f85,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9195560385742081786, guid: 79d045f1f927fc143b75b35fd82a8f85,
         type: 3}
