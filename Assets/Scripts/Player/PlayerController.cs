@@ -19,6 +19,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (player.bRespawning)
+        {
+            return;
+        }
         if (mode == PlayerControllerMode.ControlPlayer)
         {
             player.SetIsRunning(Input.GetKey(player.RunKeyCode));

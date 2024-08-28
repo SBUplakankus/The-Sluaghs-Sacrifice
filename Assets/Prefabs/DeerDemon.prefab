@@ -5341,7 +5341,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: deaeb5b23c45a3f4f9a87798d245b604,
         type: 3}
       propertyPath: m_Name
-      value: DeerDemon 1
+      value: DeerDemon
       objectReference: {fileID: 0}
     - target: {fileID: 1028016851684066728, guid: deaeb5b23c45a3f4f9a87798d245b604,
         type: 3}

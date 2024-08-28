@@ -12,6 +12,8 @@ TagManager:
   - door
   - HeadBone
   - Demon
+  - note
+  - HangingBody
   layers:
   - Default
   - TransparentFX
@@ -23,8 +25,8 @@ TagManager:
   - Items
   - Hanging Bodies
   - Doors
-  - 
-  - 
+  - Demon
+  - Lights
   - 
   - 
   - 

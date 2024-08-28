@@ -384,7 +384,7 @@ public class Door : MonoBehaviour
     }
 
     // pulled from Unreal Engine (do not sell a game with this code in it)
-    private float ClampAxis(float angle)
+    public static float ClampAxis(float angle)
     {
         // returns Angle in the range (-360,360)
         angle %= 360.0f;
@@ -398,7 +398,7 @@ public class Door : MonoBehaviour
     }
 
     // pulled from Unreal Engine (do not sell a game with this code in it)
-    private float NormalizeAxis(float angle)
+    public static float NormalizeAxis(float angle)
     {
         // returns Angle in the range [0,360)
         angle = ClampAxis(angle);

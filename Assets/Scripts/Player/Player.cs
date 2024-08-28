@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Triggers;
+using UI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -27,6 +29,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _ui = UIController.Instance;
         gameManager = FindObjectOfType<GameManager>();
         audioManager = FindObjectOfType<AudioManager>();
         Transform[] ChildTransforms = GetComponentsInChildren<Transform>();
@@ -51,6 +54,10 @@ public class Player : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (bRespawning)
+        {
+            return;
+        }
         ValidatePosition();
         UpdateCandidatePickupItem();
         UpdatePickUpItems();
@@ -79,6 +86,7 @@ public class Player : MonoBehaviour
 
     void BeginPickupKey()
     {
+        GetComponentInChildren<PlayerFlashlight>().TriggerFlicker(6.0f, 6.2f);
         pickingUpItem = candidateUseObject;
         originalPickupDistance = (TargetPickupHoverLocation() - pickingUpItem.transform.position).magnitude;
         bPickingUpItem = true;
@@ -132,6 +140,10 @@ public class Player : MonoBehaviour
         {
             candidateUseObject.GetComponentInParent<Door>().ShowInteractUI();
         }
+        else if (candidateUseObject.CompareTag("note"))
+        {
+            _ui.ShowInteract("Read Note");
+        }
     }
 
     void VoidCurrentInteractObject()
@@ -147,6 +159,11 @@ public class Player : MonoBehaviour
             else if (candidateUseObject.CompareTag("door"))
             {
                 candidateUseObject.GetComponentInParent<Door>().HideInteractUI();
+            }
+            else if (candidateUseObject.CompareTag("note"))
+            {
+                _ui.HideNote();
+                _ui.HideInteract();
             }
             candidateUseObject = null;
             bCandidateUseObjectExists = false;
@@ -341,6 +358,11 @@ public class Player : MonoBehaviour
         return false;
     }
 
+    void BeginInteractWithNote()
+    {
+        _ui.HandleNoteInteraction(candidateUseObject.GetComponent<NoteDetection>().noteContents);
+    }
+
     // ReSharper disable Unity.PerformanceAnalysis
     public void TryUse()
     {
@@ -360,9 +382,33 @@ public class Player : MonoBehaviour
         {
             BeginInteractWithDoor();
         }
+        else if (candidateUseObject.CompareTag("note"))
+        {
+            BeginInteractWithNote();
+        }
         pickupTime = 0.0f;
         candidateUseObject = null;
         bCandidateUseObjectExists = false;
+    }
+
+    // end goal something like:
+    // like lock player movement, fade out, move player to chekcpoint, fade in, unlock player movement
+    public void Respawn()
+    {
+        // this locks movement
+        bRespawning = true;
+        
+        // really should be set
+        if (bCheckpointSet)
+        {
+            transform.position = checkpoint.transform.position;
+            // .. some time passes
+            bRespawning = false;
+        }
+        else
+        {
+            // panic
+        }
     }
 
     public bool IsCheckpointSet()
@@ -388,6 +434,15 @@ public class Player : MonoBehaviour
     private Vector3 TargetPickupHoverLocation()
     {
         return bodyCamera.transform.position + bodyCamera.transform.forward * 0.85f;
+    }
+
+    public void KilLFlashlight()
+    {
+        PlayerFlashlight flashlight = GetComponentInChildren<PlayerFlashlight>();
+        if (!flashlight.bDead)
+        {
+            flashlight.FlickerAndDie();
+        }
     }
 
     private const float WALK_SPEED_DEFAULT = 7.8f;
@@ -500,6 +555,8 @@ public class Player : MonoBehaviour
     private float originalPickupDistance;
     private float pickupTime;
     public bool bSteppin;
+    private UIController _ui;
+    public bool bRespawning;
     
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // ----------------------------------------------------------------------------------------------------------- debug

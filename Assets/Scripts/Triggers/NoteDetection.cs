@@ -20,21 +20,21 @@ namespace Triggers
 
         private void Update()
         {
-            if(_playerInRange && Input.GetKeyDown(KeyCode.E))
-                _ui.HandleNoteInteraction(noteContents);
+            // if(_playerInRange && Input.GetKeyDown(KeyCode.E))
+            //     _ui.HandleNoteInteraction(noteContents);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            _playerInRange = true;
-            _ui.ShowInteract("Read Note");
+            // _playerInRange = true;
+            // _ui.ShowInteract("Read Note");
         }
 
         private void OnTriggerExit(Collider other)
         {
-            _playerInRange = false;
-            _ui.HideNote();
-            _ui.HideInteract();
+            // _playerInRange = false;
+            // _ui.HideNote();
+            // _ui.HideInteract();
         }
     }
 }
