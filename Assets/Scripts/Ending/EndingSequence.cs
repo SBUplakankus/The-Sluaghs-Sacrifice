@@ -3,12 +3,14 @@ using System.Collections;
 using PrimeTween;
 using UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Ending
 {
     public class EndingSequence : MonoBehaviour
     {
-        
+        private AudioSource _audioSource;
+        public AudioSource ambience;
         
         [Header("Player")] 
         public GameObject gamePlayer;
@@ -18,8 +20,14 @@ namespace Ending
         public PlayerController playerControlScript;
         public PlayerMovement playerMovementScript;
         public Rigidbody rb;
-        
-        
+
+        public GameObject endingScreen;
+
+        private void Start()
+        {
+            _audioSource = GetComponent<AudioSource>();
+        }
+
         private void OnEnable()
         {
             AlterTrigger.OnEndingTrigger += HandleEndingTrigger;
@@ -32,12 +40,16 @@ namespace Ending
         
         private void HandleEndingTrigger()
         {
+            Debug.Log("Ok");
             StartCoroutine(SetPlayerPosition());
+            Debug.Log("Wow");
         }
         
         
         private IEnumerator SetPlayerPosition()
         {
+            ambience.Stop();
+            _audioSource.Play();
             yield return new WaitForSeconds(1.7f);
             
             DisablePlayer();
@@ -53,6 +65,11 @@ namespace Ending
             Tween.Rotation(playerCamera.transform, new Vector3(2, 240, 2), 3f);
             yield return new WaitForSeconds(5f);
             Tween.ShakeCamera(playerCamera, 3f, 1f);
+            yield return new WaitForSeconds(1f);
+            endingScreen.SetActive(false);
+            yield return new WaitForSeconds(4f);
+            SceneManager.LoadScene(1);
+
 
         }
 

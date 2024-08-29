@@ -26,10 +26,15 @@ public enum DoorInteractResult
 
 public class Player : MonoBehaviour
 {
+    private InventoryDisplay inv;
+
+    private PlayerRespawn _respawn;
     // Start is called before the first frame update
     void Start()
     {
+        _respawn = GetComponent<PlayerRespawn>();
         _ui = UIController.Instance;
+        inv = InventoryDisplay.Instance;
         gameManager = FindObjectOfType<GameManager>();
         audioManager = FindObjectOfType<AudioManager>();
         Transform[] ChildTransforms = GetComponentsInChildren<Transform>();
@@ -86,6 +91,8 @@ public class Player : MonoBehaviour
 
     void BeginPickupKey()
     {
+        _ui.HideInteract();
+        inv.SetInventorySlot();
         GetComponentInChildren<PlayerFlashlight>().TriggerFlicker(6.0f, 6.2f);
         pickingUpItem = candidateUseObject;
         originalPickupDistance = (TargetPickupHoverLocation() - pickingUpItem.transform.position).magnitude;
@@ -114,6 +121,7 @@ public class Player : MonoBehaviour
         if (result == DoorInteractResult.Opening)
         {
             audioManager.PlaySequence(candidateUseObject, AudioSequence.DoorOpen);
+            inv.ClearInventorySlots();
         }
         else if (result == DoorInteractResult.Closing)
         {
@@ -134,6 +142,7 @@ public class Player : MonoBehaviour
         if (candidateUseObject.CompareTag("anykey"))
         {
             candidateUseObject.GetComponent<Key>().SetLightActive(true);
+            _ui.ShowInteract("Pickup Key");
         }
         // hovering a door
         else if (candidateUseObject.CompareTag("door"))
@@ -154,6 +163,7 @@ public class Player : MonoBehaviour
             if (candidateUseObject.CompareTag("anykey"))
             {
                 candidateUseObject.GetComponent<Key>().SetLightActive(false);
+                _ui.HideInteract();
             }
             // undoing door hover
             else if (candidateUseObject.CompareTag("door"))
@@ -402,8 +412,8 @@ public class Player : MonoBehaviour
         if (bCheckpointSet)
         {
             transform.position = checkpoint.transform.position;
-            // .. some time passes
             bRespawning = false;
+            _respawn.RespawnEffects();
         }
         else
         {

@@ -1,16 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Audio;
 using Triggers;
+using UI;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class Creature : MonoBehaviour
 {
+    private bool _chasing;
+    public Transform[] positions;
+    public Transform currentTarget;
+    private DemonAudio _audio;
     // Start is called before the first frame update
     void Start()
     {
+        _audio = GetComponent<DemonAudio>();
         initPos = transform.position;
         chaseRadius = innerChaseRadius;
         navAgent = GetComponent<NavMeshAgent>();
@@ -35,13 +43,18 @@ public class Creature : MonoBehaviour
         }
         lightOffsets[0] = lights[0].transform.position - headTransform.position;
         lightOffsets[1] = lights[1].transform.position - headTransform.position;
+        currentTarget = positions[Random.Range(0, positions.Length)];
     }
 
     void LateUpdate()
     {
+        if (navAgent.remainingDistance < 0.5f)
+        {
+            currentTarget = positions[Random.Range(0, positions.Length)];
+        }
         if (bForceReturningHome)
         {
-            navAgent.SetDestination(initPos);
+            navAgent.SetDestination(currentTarget.position);
             if (Vector3.Distance(transform.position, initPos) < innerChaseRadius * 0.5f)
             {
                 bForceReturningHome = false;
@@ -60,10 +73,22 @@ public class Creature : MonoBehaviour
             if (bSeePlayer)
             {
                 playerInvisibleTime = 0.0f;
+                if (!_chasing)
+                {
+                    _audio.PlayChaseMusic();
+                    UIController.Instance.ShowHint();
+                    _chasing = true;
+                }
             }
             else
             {
                 playerInvisibleTime += Time.deltaTime;
+                if (_chasing)
+                {
+                    _audio.EaseOutMusic();
+                    UIController.Instance.HideHint();
+                    _chasing = false;
+                }
             }
 
             float playerDist = Vector3.Distance(player.transform.position, transform.position);
@@ -80,7 +105,7 @@ public class Creature : MonoBehaviour
                     bForceReturningHome = true;
                 }
 
-                navAgent.SetDestination(initPos);
+                navAgent.SetDestination(currentTarget.position);
                 chaseRadius = innerChaseRadius;
             }
         }

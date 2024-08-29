@@ -21,13 +21,14 @@ namespace Triggers
             if (_inRange && Input.GetKeyDown(KeyCode.E))
             {
                 PlayRecording();
-                _ui.HideInteract();
             }
         }
 
         private void PlayRecording()
         {
             _recording.Play();
+            _ui.HideInteract();
+            _inRange = false;
         }
         
         private void OnTriggerEnter(Collider other)

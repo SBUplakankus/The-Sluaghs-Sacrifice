@@ -1,18 +1,22 @@
 using System;
 using System.Collections;
+using Audio;
 using UnityEngine;
 
 namespace Triggers
 {
     public class LightTrigger : MonoBehaviour
     {
+        private TorchAudio _torchAudio;
         [SerializeField] private GameObject torchFlame;
         [SerializeField] private Light torchLight;
         private const float FadeDuration = 2f;
         private float _targetIntensity;
+        
 
         private void Awake()
         {
+            _torchAudio = GetComponent<TorchAudio>();
             _targetIntensity = torchLight.intensity;
         }
 
@@ -35,12 +39,14 @@ namespace Triggers
         {
             torchFlame.SetActive(true);
             StartCoroutine(FadeInLight());
+            _torchAudio.TorchOn();
         }
 
         public void TurnOffLight()
         {
             torchFlame.SetActive(false);
             torchLight.intensity = 0f;
+            _torchAudio.TorchOff();
         }
 
         private IEnumerator FadeInLight()
@@ -56,6 +62,7 @@ namespace Triggers
             }
 
             torchLight.intensity = _targetIntensity;
+            _torchAudio.TorchActive();
         }
     }
 }
