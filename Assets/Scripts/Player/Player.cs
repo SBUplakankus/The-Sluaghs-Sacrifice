@@ -27,9 +27,12 @@ public enum DoorInteractResult
 public class Player : MonoBehaviour
 {
     private InventoryDisplay inv;
+
+    private PlayerRespawn _respawn;
     // Start is called before the first frame update
     void Start()
     {
+        _respawn = GetComponent<PlayerRespawn>();
         _ui = UIController.Instance;
         inv = InventoryDisplay.Instance;
         gameManager = FindObjectOfType<GameManager>();
@@ -409,8 +412,8 @@ public class Player : MonoBehaviour
         if (bCheckpointSet)
         {
             transform.position = checkpoint.transform.position;
-            // .. some time passes
             bRespawning = false;
+            _respawn.RespawnEffects();
         }
         else
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Audio;
 using Triggers;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -8,9 +9,13 @@ using UnityEngine.AI;
 
 public class Creature : MonoBehaviour
 {
+    private bool _chasing;
+
+    private DemonAudio _audio;
     // Start is called before the first frame update
     void Start()
     {
+        _audio = GetComponent<DemonAudio>();
         initPos = transform.position;
         chaseRadius = innerChaseRadius;
         navAgent = GetComponent<NavMeshAgent>();
@@ -60,10 +65,20 @@ public class Creature : MonoBehaviour
             if (bSeePlayer)
             {
                 playerInvisibleTime = 0.0f;
+                if (!_chasing)
+                {
+                    _audio.PlayChaseMusic();
+                    _chasing = true;
+                }
             }
             else
             {
                 playerInvisibleTime += Time.deltaTime;
+                if (_chasing)
+                {
+                    _audio.EaseOutMusic();
+                    _chasing = false;
+                }
             }
 
             float playerDist = Vector3.Distance(player.transform.position, transform.position);

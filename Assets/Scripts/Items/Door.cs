@@ -96,9 +96,14 @@ public class Door : MonoBehaviour
                 bUpdatedLockedInteractDisplay = true;
                 _ui.ShowInteract("Enter (locked)");
             }
-            else
+            else if (interactionCount == 2)
             {
                 _ui.ShowInteract("Enter");
+            }
+            else
+            {
+                bUpdatedLockedInteractDisplay = true;
+                _ui.ShowInteract("Enter (locked)");
             }
             bShowingUI = true;
         }
