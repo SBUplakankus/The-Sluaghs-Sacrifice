@@ -137,6 +137,9 @@ public class Creature : MonoBehaviour
             {
                 player.Respawn();
                 bForceReturningHome = true;
+                _audio.EaseOutMusic();
+                UIController.Instance.HideHint();
+                _chasing = false;
             }
             else // lights
             {
