@@ -48,14 +48,10 @@ public class Creature : MonoBehaviour
 
     void LateUpdate()
     {
-        if (navAgent.remainingDistance < 0.5f)
-        {
-            currentTarget = positions[Random.Range(0, positions.Length)];
-        }
         if (bForceReturningHome)
         {
             navAgent.SetDestination(currentTarget.position);
-            if (Vector3.Distance(transform.position, initPos) < innerChaseRadius * 0.5f)
+            if (Vector3.Distance(transform.position, currentTarget.position) < innerChaseRadius * 0.5f)
             {
                 bForceReturningHome = false;
             }
@@ -108,6 +104,11 @@ public class Creature : MonoBehaviour
                 navAgent.SetDestination(currentTarget.position);
                 chaseRadius = innerChaseRadius;
             }
+            
+            if (navAgent.remainingDistance < 0.5f && !_chasing)
+            {
+                currentTarget = positions[Random.Range(0, positions.Length)];
+            }
         }
 
         animator.SetFloat("Speed", navAgent.velocity.magnitude);
@@ -137,9 +138,7 @@ public class Creature : MonoBehaviour
             {
                 player.Respawn();
                 bForceReturningHome = true;
-                _audio.EaseOutMusic();
                 UIController.Instance.HideHint();
-                _chasing = false;
             }
             else // lights
             {
