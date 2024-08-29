@@ -46,7 +46,7 @@ public class PlayerCheckpoint : MonoBehaviour
             Collider hitCollider = hitColliders[i];
             if (hitCollider.CompareTag("Player"))
             {
-                Debug.Log("overlap player");
+                //Debug.Log("overlap player");
                 bool bReplaceCheckpoint = false;
                 if (gameManager.bProgressiveCheckpoints)
                 {
@@ -66,7 +66,7 @@ public class PlayerCheckpoint : MonoBehaviour
 
                 if (bReplaceCheckpoint)
                 {
-                    Debug.Log("set checkpoint");
+                    //Debug.Log("set checkpoint");
                     gameManager.player.checkpoint = this;
                     break;
                 }

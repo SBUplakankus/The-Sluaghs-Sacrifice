@@ -22,6 +22,7 @@ public enum DoorType
 
 public class Door : MonoBehaviour
 {
+    public GameObject deerDemon;
     void Start()
     {
         
@@ -96,14 +97,10 @@ public class Door : MonoBehaviour
                 bUpdatedLockedInteractDisplay = true;
                 _ui.ShowInteract("Enter (locked)");
             }
-            else if (interactionCount == 2)
-            {
-                _ui.ShowInteract("Enter");
-            }
             else
             {
                 bUpdatedLockedInteractDisplay = true;
-                _ui.ShowInteract("Enter (locked)");
+                _ui.ShowInteract("Enter");
             }
             bShowingUI = true;
         }
@@ -178,6 +175,11 @@ public class Door : MonoBehaviour
 
     public void ToggleOpen(Vector3 fromPoint)
     {
+        if (deerDemon)
+        {
+            deerDemon.SetActive(false);
+        }
+        
         liftBeginY = doors[0].door.transform.position.y;
         if (state == DoorState.Open)
         {

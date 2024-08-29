@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using Triggers;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace UI
         [SerializeField] private GameObject inventoryPanel;
         [SerializeField] private GameObject notePickUp;
         [SerializeField] private GameObject tutorial;
+        [SerializeField] private GameObject hint;
 
         [Header("Pause")] 
         [SerializeField] private GameObject pauseIcon;
@@ -45,6 +47,11 @@ namespace UI
 
         private void Start()
         {
+            if (hint)
+            {
+                hint.SetActive(false);
+            }
+            
             HideInteract();
             HidePauseMenu();
             inventoryPanel.SetActive(false);
@@ -79,8 +86,18 @@ namespace UI
 
             if (Input.GetKeyDown(KeyCode.T))
                 HandleTutorial();
-        }   
+        }
 
+        public void ShowHint()
+        {
+            hint.SetActive(true);
+        }
+
+        public void HideHint()
+        {
+            hint.SetActive(false);
+        }
+        
         private void HandleTutorial()
         {
             if (_tutorialOpen)
