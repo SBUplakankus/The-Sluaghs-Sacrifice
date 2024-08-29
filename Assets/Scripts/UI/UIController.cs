@@ -13,6 +13,7 @@ namespace UI
         [SerializeField] private GameObject flashInfo;
         [SerializeField] private GameObject inventoryPanel;
         [SerializeField] private GameObject notePickUp;
+        [SerializeField] private GameObject tutorial;
 
         [Header("Pause")] 
         [SerializeField] private GameObject pauseIcon;
@@ -22,6 +23,8 @@ namespace UI
         private bool _inventoryOpen;
         private bool _noteOpen;
         private bool _paused;
+        private bool _tutorialOpen;
+        public bool tutorialLevel;
 
         [Header("UI Scripts")] 
         private NoteDisplay _noteDisplay;
@@ -48,6 +51,17 @@ namespace UI
             _inventoryOpen = false;
             _paused = false;
             HideNote();
+
+            if (tutorialLevel)
+            {
+                _tutorialOpen = true;
+                tutorial.SetActive(true);
+            }
+            else
+            {
+                _tutorialOpen = false;
+                tutorial.SetActive(false);
+            }
         }
 
         private void Update()
@@ -62,12 +76,28 @@ namespace UI
 
             if (Input.GetKeyDown(KeyCode.Q))
                 HandePauseMenu();
-                
-        }
 
+            if (Input.GetKeyDown(KeyCode.T))
+                HandleTutorial();
+        }   
+
+        private void HandleTutorial()
+        {
+            if (_tutorialOpen)
+            {
+                _tutorialOpen = false;
+                tutorial.SetActive(false);
+            }
+            else
+            {
+                _tutorialOpen = true;
+                tutorial.SetActive(true);
+            }
+        }
+        
         private void HandePauseMenu()
         {
-            if (_paused)
+            if (!_paused)
                 ShowPauseMenu();
             else
                 HidePauseMenu();
@@ -81,7 +111,7 @@ namespace UI
             pauseIcon.SetActive(true);
             playIcon.SetActive(false);
             Time.timeScale = 0;
-            _paused = false;
+            _paused = true;
         }
         
         /// <summary>
@@ -92,7 +122,7 @@ namespace UI
             pauseIcon.SetActive(false);
             playIcon.SetActive(true);
             Time.timeScale = 1;
-            _paused = true;
+            _paused = false;
         }
         
         /// <summary>
@@ -115,8 +145,9 @@ namespace UI
         /// <summary>
         /// Show the inventory
         /// </summary>
-        public void ShowInventory()
+        private void ShowInventory()
         {
+            if(_tutorialOpen) return;
             _audioSource.PlayOneShot(inventoryClips[0]);
             inventoryPanel.SetActive(true);
             _inventoryOpen = true;
@@ -125,7 +156,7 @@ namespace UI
         /// <summary>
         /// Hide the inventory
         /// </summary>
-        public void HideInventory()
+        private void HideInventory()
         {
             _audioSource.PlayOneShot(inventoryClips[1]);
             inventoryPanel.SetActive(false);
