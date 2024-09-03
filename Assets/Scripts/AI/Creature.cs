@@ -72,7 +72,7 @@ public class Creature : MonoBehaviour
                 if (!_chasing)
                 {
                     _audio.PlayChaseMusic();
-                    UIController.Instance.ShowHint();
+                    UIController.Instance.ShowHint("Hold Shift to Sprint");
                     _chasing = true;
                 }
             }

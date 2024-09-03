@@ -1,5 +1,72 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5287987993071366481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7758532495555192465}
+  - component: {fileID: 7201975194169032030}
+  - component: {fileID: 4377954137095907312}
+  m_Layer: 7
+  m_Name: Hint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7758532495555192465
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287987993071366481}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1713865128227860610}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &7201975194169032030
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287987993071366481}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 20
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4377954137095907312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5287987993071366481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18c7ad3370f49254eb6d9c1e664eee3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hintText: A Key is Nearby
 --- !u!1 &7032946040837300814
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,9 +211,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8288287109507702088}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.52410257, y: -0.5010667, z: 0.47243723, w: 0.5010507}
+  m_LocalRotation: {x: 0.52410555, y: -0.5010665, z: 0.47243384, w: 0.5010509}
   m_LocalPosition: {x: -1.786, y: -5.875, z: 3.796}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.2793492, y: 0.27934918, z: 0.27934915}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3438246990982250208}
@@ -154,6 +221,7 @@ Transform:
   - {fileID: 2118512641976437508}
   - {fileID: 4516062039279613859}
   - {fileID: 7480220443340453561}
+  - {fileID: 7758532495555192465}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 92.979004, y: 7.6399994, z: 94.679}
 --- !u!135 &3198536445789646506
@@ -175,7 +243,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4399258964635770619
 MonoBehaviour:
@@ -190,7 +258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxLightIntensity: 6
-  type: 2
+  type: 1
 --- !u!1001 &335742423960464795
 PrefabInstance:
   m_ObjectHideFlags: 0
