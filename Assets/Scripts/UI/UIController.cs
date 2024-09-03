@@ -1,4 +1,5 @@
 using System;
+using Ending;
 using TMPro;
 using Triggers;
 using UnityEngine;
@@ -15,11 +16,17 @@ namespace UI
         [SerializeField] private GameObject inventoryPanel;
         [SerializeField] private GameObject notePickUp;
         [SerializeField] private GameObject tutorial;
-        [SerializeField] private GameObject hint;
+        [SerializeField] private GameObject vhsCursor;
+        [SerializeField] private TMP_Text hint;
 
         [Header("Pause")] 
         [SerializeField] private GameObject pauseIcon;
         [SerializeField] private GameObject playIcon;
+
+        [Header("Tutorial")] 
+        public GameObject howToPlay;
+        public GameObject controlPage;
+        private int _tutorialIndex;
         
         [Header("UI Checks")] 
         private bool _inventoryOpen;
@@ -27,11 +34,13 @@ namespace UI
         private bool _paused;
         private bool _tutorialOpen;
         public bool tutorialLevel;
+        private bool _cursorOpen;
 
         [Header("UI Scripts")] 
         private NoteDisplay _noteDisplay;
         private InteractPopUp _interactPopUp;
         private AudioSource _audioSource;
+        private ScreenFade _screenFade;
 
         [Header("UI Sounds")] 
         public AudioClip notePickup;
@@ -43,14 +52,12 @@ namespace UI
             _noteDisplay = GetComponent<NoteDisplay>();
             _interactPopUp = GetComponent<InteractPopUp>();
             _audioSource = GetComponent<AudioSource>();
+            _screenFade = GetComponent<ScreenFade>();
         }
 
         private void Start()
         {
-            if (hint)
-            {
-                hint.SetActive(false);
-            }
+            hint.gameObject.SetActive(false);
             
             HideInteract();
             HidePauseMenu();
@@ -58,6 +65,8 @@ namespace UI
             _inventoryOpen = false;
             _paused = false;
             HideNote();
+            HideHint();
+            ShowCursor();
 
             if (tutorialLevel)
             {
@@ -86,29 +95,47 @@ namespace UI
 
             if (Input.GetKeyDown(KeyCode.T))
                 HandleTutorial();
+            
+            if(Input.GetKeyDown(KeyCode.C))
+                HandleCursorToggle();
         }
 
-        public void ShowHint()
+        public void ShowHint(string text)
         {
-            hint.SetActive(true);
+            hint.text = text;
+            hint.gameObject.SetActive(true);
+            Debug.Log(text);
         }
 
         public void HideHint()
         {
-            hint.SetActive(false);
+            hint.gameObject.SetActive(false);
         }
         
         private void HandleTutorial()
         {
             if (_tutorialOpen)
             {
-                _tutorialOpen = false;
-                tutorial.SetActive(false);
+                if (_tutorialIndex == 0)
+                {
+                    howToPlay.SetActive(false);
+                    controlPage.SetActive(true);
+                    _tutorialIndex++;
+                }
+                else
+                {
+                    _tutorialOpen = false;
+                    tutorial.SetActive(false);
+                }
             }
             else
             {
                 _tutorialOpen = true;
+                _tutorialIndex = 0;
+                controlPage.SetActive(false);
+                howToPlay.SetActive(true);
                 tutorial.SetActive(true);
+                
             }
         }
         
@@ -204,6 +231,26 @@ namespace UI
         {
             notePickUp.SetActive(false);
             _noteOpen = false;
+        }
+
+        private void HandleCursorToggle()
+        {
+            if(_cursorOpen)
+                HideCursor();
+            else
+                ShowCursor();
+        }
+        
+        private void ShowCursor()
+        {
+            vhsCursor.SetActive(true);
+            _cursorOpen = true;
+        }
+
+        private void HideCursor()
+        {
+            vhsCursor.SetActive(false);
+            _cursorOpen = false;
         }
     }
 }

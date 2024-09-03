@@ -31,6 +31,11 @@ namespace UI
             StartCoroutine(FadeOutInSequence());
         }
 
+        public void RespawnFade()
+        {
+            StartCoroutine(FadeOut());
+        }
+        
         // Fade Image Out
         private IEnumerator FadeOut()
         {

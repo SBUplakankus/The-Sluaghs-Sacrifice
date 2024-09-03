@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Versioning;
+using UI;
 using UnityEngine;
 
 public enum KeyType
@@ -9,6 +10,13 @@ public enum KeyType
 
 public class Key : MonoBehaviour
 {
+    public GameObject hintTrigger;
+
+    private void OnDestroy()
+    {
+        hintTrigger.SetActive(false);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -104,6 +112,7 @@ public class Key : MonoBehaviour
         {
             light.enabled = true;
             light.intensity = Mathf.Clamp(light.intensity + intensityDelta, 0.0f, maxLightIntensity);
+            UIController.Instance.HideHint();
         }
         else if (light.intensity > 0.0f)
         {

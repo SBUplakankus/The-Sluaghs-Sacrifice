@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 7562877867880935279}
   - component: {fileID: 4880852833896627686}
   - component: {fileID: 851386251591428567}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Note
-  m_TagString: Untagged
+  m_TagString: note
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.70710677, z: -0.70710677, w: 0}
   m_LocalPosition: {x: -18.71, y: 3.273, z: -11.4}
-  m_LocalScale: {x: 0.12345232, y: 0.12345232, z: 0.12345232}
+  m_LocalScale: {x: 0.053884014, y: 0.053884014, z: 0.053884014}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8399031819025460042}
@@ -47,14 +47,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96881cfcf5b71c148a7533ed754a1945, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noteContents: 'Should darkness break free and the cycle begin anew
+  noteContents: 'Three keys must be found to progress through its home
 
 
-    Eight
-    bodies severed and piled Crom Cruach requires
-
-
-    To restore the Sluaghs curfew'
+    Made
+    of gold made of silver and some made of bone'
   noteDisplay: {fileID: 0}
 --- !u!135 &4880852833896627686
 SphereCollider:
@@ -75,7 +72,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 20
+  m_Radius: 9.48
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!82 &851386251591428567
 AudioSource:
@@ -185,7 +182,7 @@ GameObject:
   - component: {fileID: 2501322362163914790}
   - component: {fileID: 2293449573327830519}
   - component: {fileID: 5297808300039675354}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
