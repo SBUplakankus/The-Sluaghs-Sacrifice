@@ -10,13 +10,6 @@ public enum KeyType
 
 public class Key : MonoBehaviour
 {
-    public GameObject hintTrigger;
-
-    private void OnDestroy()
-    {
-        hintTrigger.SetActive(false);
-    }
-
     // Start is called before the first frame update
     void Start()
     {

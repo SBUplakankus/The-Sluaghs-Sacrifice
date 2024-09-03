@@ -15,7 +15,6 @@ namespace UI
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("Oi");
             if(!other.gameObject.CompareTag("Player")) return;
             
             _ui.ShowHint(hintText);

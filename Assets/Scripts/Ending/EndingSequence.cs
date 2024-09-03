@@ -40,14 +40,13 @@ namespace Ending
         
         private void HandleEndingTrigger()
         {
-            Debug.Log("Ok");
             StartCoroutine(SetPlayerPosition());
-            Debug.Log("Wow");
         }
         
         
         private IEnumerator SetPlayerPosition()
         {
+            UIController.Instance.HideCursor();
             ambience.Stop();
             _audioSource.Play();
             yield return new WaitForSeconds(1.7f);

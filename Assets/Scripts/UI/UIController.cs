@@ -104,7 +104,6 @@ namespace UI
         {
             hint.text = text;
             hint.gameObject.SetActive(true);
-            Debug.Log(text);
         }
 
         public void HideHint()
@@ -247,7 +246,7 @@ namespace UI
             _cursorOpen = true;
         }
 
-        private void HideCursor()
+        public void HideCursor()
         {
             vhsCursor.SetActive(false);
             _cursorOpen = false;
