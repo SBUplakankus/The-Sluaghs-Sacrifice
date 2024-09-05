@@ -4546,12 +4546,12 @@ PrefabInstance:
     - target: {fileID: 6583495617239394437, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
         type: 3}
       propertyPath: walkSpeed
-      value: 2.84
+      value: 2.72
       objectReference: {fileID: 0}
     - target: {fileID: 6583495617239394437, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
         type: 3}
       propertyPath: mouseInputSpeed
-      value: 295.4
+      value: 244.9
       objectReference: {fileID: 0}
     - target: {fileID: 6583495617239394437, guid: 8ff1f4136bc904d4891e68c6e3de0f88,
         type: 3}
