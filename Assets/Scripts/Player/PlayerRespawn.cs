@@ -25,6 +25,7 @@ public class PlayerRespawn : MonoBehaviour
         if (!_hintOpen) return;
         _hintCooldown -= Time.deltaTime;
         if (_hintCooldown > 0) return;
+        _hintOpen = false;
         _ui.HideHint();
 
     }
@@ -34,11 +35,13 @@ public class PlayerRespawn : MonoBehaviour
     /// </summary>
     public void RespawnEffects()
     {
-        _ui.ShowHint("The Sluagh caught you");
+        
         _hintCooldown = HintTimer;
         _hintOpen = true;
         screenFade.RespawnFade();
         respawnEffect.Play();
         respawnAudio.Play();
+        _ui.ShowHint("The Sluagh caught you");
+        Debug.Log("Show");
     }
 }
