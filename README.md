@@ -63,7 +63,7 @@ Everything in the game was created within the jam timeframe — with the excepti
 
 ## 🧱 Built With
 
-- 🎮 Unity (or your chosen engine)  
+- 🎮 Unity 
 - 💻 C#  
 - 🎵 Custom audio design and ambient SFX  
 - 🖼️ Free 3D assets from [elbolilloduro](https://elbolilloduro.itch.io/)
